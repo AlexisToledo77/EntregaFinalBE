@@ -9,6 +9,8 @@ import productsRouter from './routes/productsRouter.js'
 import cartsRouter from './routes/cartsRouter.js'
 import usersRouter from './routes/usersRouter.js'
 import { productsManager } from './dao/productsManager.js'
+import { userManager } from './dao/userManager.js'
+import { cartsManager } from './dao/cartsManager.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -39,6 +41,9 @@ io.on('connection', async (socket) => {
 
   const products = await productsManager.readFile()
   socket.emit('products', products)
+
+  const users = await userManager.readFile()
+  socket.emit('users', users)
 
   socket.on('newProduct', async (product) => {
     const newProduct = await productsManager.addItem(product)
