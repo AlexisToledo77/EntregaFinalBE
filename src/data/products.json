@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Bicicleta",
+    "price": 2000,
+    "quantity": 1,
+    "id": 4
+  },
+  {
+    "name": "maceta",
+    "price": 10000,
+    "quantity": 1,
+    "id": 5
+  },
+  {
+    "name": "Bateria",
+    "price": 5000,
+    "quantity": 3,
+    "id": 6
+  },
+  {
+    "name": "Auto",
+    "price": 1000000,
+    "quantity": 1,
+    "id": 7
+  }
+]
