@@ -1,7 +1,6 @@
 import express from 'express'
 import { cartsManager } from '../dao/cartsManager.js'
 import { productsManager } from '../dao/productsManager.js'
-// import { userManager } from '../dao/userManager.js'
 
 const router = express.Router()
 

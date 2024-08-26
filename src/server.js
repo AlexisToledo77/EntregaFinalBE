@@ -58,6 +58,12 @@ io.on('connection', async (socket) => {
     io.emit('user', updatedUser)
   })
 
+  socket.on('deleteUser', async (user) => {
+    await userManager.deleteItem(user)
+    const deleteUser = await userManager.readFile()
+    io.emit('user', deleteUser)
+  })
+
   socket.on('newCart', async (cart) => {
     const newCart = await cartsManager.addItem(cart)
     const updatedCart = await cartsManager.readFile()
@@ -67,7 +73,7 @@ io.on('connection', async (socket) => {
   socket.on('deleteCarts', async (cart) => {
     await cartsManager.deleteItem(cart)
     const updatedCarts = await cartsManager.readFile()
-    io.emit('products', updatedCarts)
+    io.emit('cart', updatedCarts)
   })
 
 })

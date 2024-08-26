@@ -3,6 +3,11 @@ import { userManager } from '../dao/userManager.js'
 
 const router = express.Router()
 
+router.get('/', async (req, res) => {
+  const users = await userManager.readFile()
+  res.json(users)
+})
+
 router.post('/', async (req, res) => {
   const { name, email } = req.body
   const newUser = await userManager.addItem({ name, email })
@@ -28,6 +33,14 @@ router.put('/:id', async (req, res) => {
   } else {
     res.status(404).json({ message: 'Usuario no encontrado' })
   }
+})
+
+router.delete('/:id', async (req, res) => {
+  await userManager.deleteItem(parseInt(req.params.id))
+  const io = req.app.get('socketio')
+  const deleteUser = await userManager.readFile()
+  io.emit('user', deleteUser)
+  res.status(204).end()
 })
 
 export default router
