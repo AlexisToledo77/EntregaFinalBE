@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "userId": "1",
+    "products": "1, 2, 3",
+    "id": 1
+  },
+  {
+    "userId": "2",
+    "products": "3",
+    "id": 2
+  },
+  {
+    "userId": "3",
+    "products": "3",
+    "id": 3
+  }
+]

@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 
-class UsersManager {
+class UserManager {
   constructor(filePath) {
     this.filePath = filePath
   }
@@ -30,14 +30,11 @@ class UsersManager {
   async addItem(item) {
     const data = await this.readFile()
     const existingItem = data.find(i => i.name.toLowerCase() === item.name.toLowerCase())
-    
     if (existingItem) {
-      existingItem.quantity = (existingItem.quantity || 1) + (item.quantity || 1)
       await this.writeFile(data)
-      return existingItem
+      return existingItem 
     } else {
       item.id = await this.getNextId()
-      item.quantity = item.quantity || 1
       data.push(item)
       await this.writeFile(data)
       return item
@@ -72,4 +69,4 @@ class UsersManager {
   }
 }
 
-export const usersManager = new UsersManager('./src/data/users.json')
+export const userManager = new UserManager('./src/data/users.json')

@@ -2,6 +2,7 @@ import express from 'express'
 import { productsManager } from '../dao/productsManager.js'
 
 const router = express.Router()
+const products = await productsManager.readFile()
 
 router.get('/', async (req, res) => {
   const products = await productsManager.readFile()

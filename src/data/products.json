@@ -3,24 +3,36 @@
     "name": "Bicicleta",
     "price": 2000,
     "quantity": 1,
-    "id": 4
+    "id": 1
   },
   {
     "name": "maceta",
     "price": 10000,
     "quantity": 1,
-    "id": 5
+    "id": 2
   },
   {
-    "name": "Bateria",
+    "name": "Bateria Moura",
     "price": 5000,
     "quantity": 3,
-    "id": 6
+    "id": 3
   },
   {
     "name": "Auto",
     "price": 1000000,
     "quantity": 1,
-    "id": 7
+    "id": 4
+  },
+  {
+    "name": "Bateria Bosch",
+    "price": "10000",
+    "quantity": "2",
+    "id": 5
+  },
+  {
+    "name": "Guitarra Test Post",
+    "price": "10000",
+    "quantity": "1",
+    "id": 6
   }
 ]

@@ -1,10 +1,14 @@
 import express from 'express'
-import { usersManager } from '../dao/userManager.js'
+import { userManager } from '../dao/userManager.js'
 
 const router = express.Router()
 
 router.post('/', async (req, res) => {
-  const newUser = await usersManager.addItem(req.body)
+  const { name, email } = req.body
+  const newUser = await userManager.addItem({ name, email })
+  const io = req.app.get('socketio')
+  const updatedUser = await userManager.readFile()
+  io.emit('user', updatedUser)
   res.status(201).json(newUser)
 })
 

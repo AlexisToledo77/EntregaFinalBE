@@ -51,6 +51,25 @@ io.on('connection', async (socket) => {
     const updatedProducts = await productsManager.readFile()
     io.emit('products', updatedProducts)
   })
+
+  socket.on('newUser', async (user) => {
+    const newUser = await userManager.addItem(user)
+    const updatedUser = await userManager.readFile()
+    io.emit('user', updatedUser)
+  })
+
+  socket.on('newCart', async (cart) => {
+    const newCart = await cartsManager.addItem(cart)
+    const updatedCart = await cartsManager.readFile()
+    io.emit('cart', updatedCart)
+  })
+
+  socket.on('deleteCarts', async (cart) => {
+    await cartsManager.deleteItem(cart)
+    const updatedCarts = await cartsManager.readFile()
+    io.emit('products', updatedCarts)
+  })
+
 })
 
 app.set('socketio', io)

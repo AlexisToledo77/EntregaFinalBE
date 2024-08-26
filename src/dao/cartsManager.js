@@ -30,15 +30,13 @@ class CartsManager {
 
   async addItem(item) {
     const data = await this.readFile()
-    const existingItem = data.find(i => i.name.toLowerCase() === item.name.toLowerCase())
+    const existingItem = data.find(i => i.userId === parseInt(item.userId))
     
     if (existingItem) {
-      existingItem.quantity = (existingItem.quantity || 1) + (item.quantity || 1)
       await this.writeFile(data)
       return existingItem
     } else {
       item.id = await this.getNextId()
-      item.quantity = item.quantity || 1
       data.push(item)
       await this.writeFile(data)
       return item
@@ -66,11 +64,7 @@ class CartsManager {
     const data = await this.readFile()
     return data.find(item => item.id === id)
   }
-
-  async getItemByName(name) {
-    const data = await this.readFile()
-    return data.find(item => item.name.toLowerCase() === name.toLowerCase())
-  }
 }
+
 
 export const cartsManager = new CartsManager('./src/data/carts.json')
