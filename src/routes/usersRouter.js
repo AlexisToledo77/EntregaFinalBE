@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-  const user = await usersManager.getItemById(parseInt(req.params.id))
+  const user = await userManager.getItemById(parseInt(req.params.id))
   if (user) {
     res.json(user)
   } else {
@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
 })
 
 router.put('/:id', async (req, res) => {
-  const updatedUser = await usersManager.updateItem(parseInt(req.params.id), req.body)
+  const updatedUser = await userManager.updateItem(parseInt(req.params.id), req.body)
   if (updatedUser) {
     res.json(updatedUser)
   } else {
