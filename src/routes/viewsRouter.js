@@ -9,18 +9,13 @@ router.get('/', async (req, res) => {
   res.render('home', { products })
 })
 
-
 router.get('/realtimeproducts', (req, res) => {
   res.render('realTimeProducts')
 })
 
 router.get('/verUsuarios', async (req, res) => {
-  const user = await userManager.readFile()
-  res.render('verUsuarios', { user })
-})
-
-router.get('/verUsuarios', (req, res) => {
-  res.render('verUsuarios')
+  const users = await userManager.readFile()
+  res.render('verUsuarios', { users })
 })
 
 export default router

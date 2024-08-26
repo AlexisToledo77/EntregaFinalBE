@@ -1,9 +1,9 @@
 <h1>Lista de Usuarios</h1>
 <ul>
-    {{#each user}}
+    {{#each users}}
     <li>Nombre de usuario: {{this.name}} - E-mail: {{this.email}}</li>
     {{/each}}
-   
+   <br></br>
     <button onclick="window.location.href='/realTimeProducts'">Agregar Productos</button>
     <button onclick="window.location.href='/'">Volver a Home</button>
 </ul>

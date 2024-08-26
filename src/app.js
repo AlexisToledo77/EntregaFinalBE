@@ -42,9 +42,6 @@ io.on('connection', async (socket) => {
   const products = await productsManager.readFile()
   socket.emit('products', products)
 
-  const users = await userManager.readFile()
-  socket.emit('users', users)
-
   socket.on('newProduct', async (product) => {
     const newProduct = await productsManager.addItem(product)
     const updatedProducts = await productsManager.readFile()
