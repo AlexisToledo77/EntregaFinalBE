@@ -1,5 +1,5 @@
 import express from 'express'
-import { productsManager } from '../dao/fileManager.js'
+import { productsManager } from '../dao/productsManager.js'
 
 const router = express.Router()
 

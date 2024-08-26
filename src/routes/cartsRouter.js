@@ -1,6 +1,6 @@
 import express from 'express'
-import { cartsManager, productsManager } from '../dao/fileManager.js'
-
+import { cartsManager } from '../dao/cartsManager.js'
+import { productsManager } from '../dao/productsManager.js'
 const router = express.Router()
 
 router.post('/', async (req, res) => {

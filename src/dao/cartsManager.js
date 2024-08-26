@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 
 
-class FileManager {
+class CartsManager {
   constructor(filePath) {
     this.filePath = filePath
   }
@@ -73,6 +73,4 @@ class FileManager {
   }
 }
 
-export const productsManager = new FileManager('./src/data/products.json')
-export const cartsManager = new FileManager('./src/data/carts.json')
-export const usersManager = new FileManager('./src/data/users.json')
+export const cartsManager = new CartsManager('./src/data/carts.json')

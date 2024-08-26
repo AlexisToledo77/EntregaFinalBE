@@ -4,11 +4,11 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import viewsRouter from './routes/views.router.js'
-import productsRouter from './routes/products.router.js'
-import cartsRouter from './routes/carts.router.js'
-import usersRouter from './routes/users.router.js'
-import { productsManager } from './dao/fileManager.js'
+import viewsRouter from './routes/viewsRouter.js'
+import productsRouter from './routes/productsRouter.js'
+import cartsRouter from './routes/cartsRouter.js'
+import usersRouter from './routes/usersRouter.js'
+import { productsManager } from './dao/productsManager.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)

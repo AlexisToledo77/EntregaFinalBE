@@ -1,5 +1,5 @@
 import express from 'express'
-import { productsManager } from '../dao/fileManager.js'
+import { productsManager } from '../dao/productsManager.js'
 
 const router = express.Router()
 
@@ -8,7 +8,6 @@ router.get('/', async (req, res) => {
   res.json(products)
 })
 
-//router test1
 router.get("/:id", (req, res) => {
   let { id } = req.params
   let producto = products.find(p => p.id === parseInt(id))
