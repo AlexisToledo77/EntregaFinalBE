@@ -5,7 +5,7 @@ const router = express.Router()
 const products = await productsManager.readFile()
 
 router.get('/', async (req, res) => {
-  const products = await productsManager.readFile()
+  let products = await productsManager.readFile()
   res.json(products)
 })
 
@@ -21,19 +21,19 @@ router.get("/:id", (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const { name, price, quantity } = req.body
-  const newProduct = await productsManager.addItem({ name, price, quantity: quantity || 1 })
-  const io = req.app.get('socketio')
-  const updatedProducts = await productsManager.readFile()
+  let { name, price, quantity } = req.body
+  let newProduct = await productsManager.addItem({ name, price, quantity: quantity || 1 })
+  let io = req.app.get('socketio')
+  let updatedProducts = await productsManager.readFile()
   io.emit('products', updatedProducts)
   res.status(201).json(newProduct)
 })
 
 router.put('/:id', async (req, res) => {
-  const updatedProduct = await productsManager.updateItem(parseInt(req.params.id), req.body)
+  let updatedProduct = await productsManager.updateItem(parseInt(req.params.id), req.body)
   if (updatedProduct) {
-    const io = req.app.get('socketio')
-    const updatedProducts = await productsManager.readFile()
+    let io = req.app.get('socketio')
+    let updatedProducts = await productsManager.readFile()
     io.emit('products', updatedProducts)
     res.json(updatedProduct)
   } else {
@@ -43,8 +43,8 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   await productsManager.deleteItem(parseInt(req.params.id))
-  const io = req.app.get('socketio')
-  const updatedProducts = await productsManager.readFile()
+  let io = req.app.get('socketio')
+  let updatedProducts = await productsManager.readFile()
   io.emit('products', updatedProducts)
   res.status(204).end()
 })

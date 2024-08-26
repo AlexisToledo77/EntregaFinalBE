@@ -39,42 +39,42 @@ app.use('/api/users', usersRouter)
 io.on('connection', async (socket) => {
   console.log('Cliente conectado')
 
-  const products = await productsManager.readFile()
+  let products = await productsManager.readFile()
   socket.emit('products', products)
 
   socket.on('newProduct', async (product) => {
-    const newProduct = await productsManager.addItem(product)
-    const updatedProducts = await productsManager.readFile()
+    let newProduct = await productsManager.addItem(product)
+    let updatedProducts = await productsManager.readFile()
     io.emit('products', updatedProducts)
   })
 
   socket.on('deleteProduct', async (productId) => {
     await productsManager.deleteItem(productId)
-    const updatedProducts = await productsManager.readFile()
+    let updatedProducts = await productsManager.readFile()
     io.emit('products', updatedProducts)
   })
 
   socket.on('newUser', async (user) => {
-    const newUser = await userManager.addItem(user)
-    const updatedUser = await userManager.readFile()
+    let newUser = await userManager.addItem(user)
+    let updatedUser = await userManager.readFile()
     io.emit('user', updatedUser)
   })
 
   socket.on('deleteUser', async (user) => {
     await userManager.deleteItem(user)
-    const deleteUser = await userManager.readFile()
+    let deleteUser = await userManager.readFile()
     io.emit('user', deleteUser)
   })
 
   socket.on('newCart', async (cart) => {
-    const newCart = await cartsManager.addItem(cart)
-    const updatedCart = await cartsManager.readFile()
+    let newCart = await cartsManager.addItem(cart)
+    let updatedCart = await cartsManager.readFile()
     io.emit('cart', updatedCart)
   })
 
   socket.on('deleteCarts', async (cart) => {
     await cartsManager.deleteItem(cart)
-    const updatedCarts = await cartsManager.readFile()
+    let updatedCarts = await cartsManager.readFile()
     io.emit('cart', updatedCarts)
   })
 

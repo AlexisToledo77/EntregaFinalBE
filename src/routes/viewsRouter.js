@@ -5,7 +5,7 @@ import { userManager } from '../dao/userManager.js'
 const router = express.Router()
 
 router.get('/', async (req, res) => {
-  const products = await productsManager.readFile()
+  let products = await productsManager.readFile()
   res.render('home', { products })
 })
 
@@ -14,7 +14,7 @@ router.get('/realtimeproducts', (req, res) => {
 })
 
 router.get('/verUsuarios', async (req, res) => {
-  const users = await userManager.readFile()
+  let users = await userManager.readFile()
   res.render('verUsuarios', { users })
 })
 
