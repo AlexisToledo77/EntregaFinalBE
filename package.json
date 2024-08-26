@@ -2,10 +2,10 @@
   "name": "testentregadesafio2",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node. /src/server.js",
-    "dev": "nodemon ./src/server.js",
+    "start": "node. /src/app.js",
+    "dev": "nodemon ./src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
