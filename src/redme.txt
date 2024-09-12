@@ -1,0 +1,6 @@
+username Atlas : alexistoledo
+Pass : CoderCoder
+
+String Conection
+
+mongodb+srv://alexistoledo:CoderCoder@cluster0.btepg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

@@ -1,88 +1,80 @@
-import express from 'express'
-import { engine } from 'express-handlebars'
-import { createServer } from 'http'
-import { Server } from 'socket.io'
-import path from 'path'
-import { fileURLToPath } from 'url'
-import viewsRouter from './routes/viewsRouter.js'
-import productsRouter from './routes/productsRouter.js'
-import cartsRouter from './routes/cartsRouter.js'
-import usersRouter from './routes/usersRouter.js'
-import { productsManager } from './dao/productsManager.js'
-import { userManager } from './dao/userManager.js'
-import { cartsManager } from './dao/cartsManager.js'
+import express from 'express';
+import exphbs from 'express-handlebars';
+import { Server } from 'socket.io';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { connDB } from './connDB.js';
+import { config } from './config/config.js';
+
+import { router as usersRouter } from "./routes/usersRouter.js"
+import viewsRouter from './routes/viewsRouter.js';
+import productsRouter from './routes/productsRouter.js';
+import cartsRouter from './routes/cartsRouter.js';
+import { ProductManager } from './dao/productsManager.js';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
-const server = createServer(app)
-const io = new Server(server)
+const PORT = config.PORT
 
+// MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+.then(() => console.log('Conectado a MongoDB'))
+.catch(err => console.error('Error conectando a MongoDB:', err))
 
-app.engine('handlebars', engine())
+// Handlebars
+const hbs = exphbs.create({
+  helpers: {
+    multiply: (a, b) => (a * b).toFixed(2),
+    calculateTotal: (products) => products.reduce((total, item) => total + (item.product.price * item.quantity), 0).toFixed(2)
+  }
+})
+
+app.engine('handlebars', exphbs.engine())
+app.engine('handlebars', hbs.engine)
 app.set('view engine', 'handlebars')
 app.set('views', path.join(__dirname, 'views'))
 
-
+// Middleware
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
 
-
+// Rutas
 app.use('/', viewsRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
-app.use('/api/users', usersRouter)
+app.use("/api/users", usersRouter)
 
+const httpServer = app.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`);
+});
 
-io.on('connection', async (socket) => {
-  console.log('Cliente conectado')
+connDB()
 
-  let products = await productsManager.readFile()
-  socket.emit('products', products)
+// const io = new Server(httpServer);
+// const productManager = new ProductManager();
 
-  socket.on('newProduct', async (product) => {
-    let newProduct = await productsManager.addItem(product)
-    let updatedProducts = await productsManager.readFile()
-    io.emit('products', updatedProducts)
-  })
+// io.on('connection', (socket) => {
+//     console.log('Nuevo cliente conectado');
 
-  socket.on('deleteProduct', async (productId) => {
-    await productsManager.deleteItem(productId)
-    let updatedProducts = await productsManager.readFile()
-    io.emit('products', updatedProducts)
-  })
+//     socket.on('addProduct', async (product) => {
+//         await productManager.addProduct(product);
+//         io.emit('updateProducts', await productManager.getProducts());
+//     });
 
-  socket.on('newUser', async (user) => {
-    let newUser = await userManager.addItem(user)
-    let updatedUser = await userManager.readFile()
-    io.emit('user', updatedUser)
-  })
+//     socket.on('deleteProduct', async (id) => {
+//         await productManager.deleteProduct(id);
+//         io.emit('updateProducts', await productManager.getProducts());
+//     });
+// });
 
-  socket.on('deleteUser', async (user) => {
-    await userManager.deleteItem(user)
-    let deleteUser = await userManager.readFile()
-    io.emit('user', deleteUser)
-  })
-
-  socket.on('newCart', async (cart) => {
-    let newCart = await cartsManager.addItem(cart)
-    let updatedCart = await cartsManager.readFile()
-    io.emit('cart', updatedCart)
-  })
-
-  socket.on('deleteCarts', async (cart) => {
-    await cartsManager.deleteItem(cart)
-    let updatedCarts = await cartsManager.readFile()
-    io.emit('cart', updatedCarts)
-  })
-
-})
-
-app.set('socketio', io)
-
-const PORT = process.env.PORT || 3000
-server.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`)
-})
+// export { io };

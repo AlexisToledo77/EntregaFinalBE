@@ -1,0 +1,97 @@
+<h1>Carrito</h1>
+{{#if cart.products.length}}
+  <ul id="cartList">
+    {{#each cart.products}}
+    <li data-product-id="{{this.product._id}}">
+      <h2>{{this.product.title}}</h2>
+      <p>Precio: ${{this.product.price}}</p>
+      <div class="quantity-control">
+        <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'decrease')">-</button>
+        <span class="quantity">{{this.quantity}}</span>
+        <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'increase')">+</button>
+      </div>
+      <p>Subtotal: $<span class="subtotal">{{multiply this.product.price this.quantity}}</span></p>
+      <button onclick="removeFromCart('{{../cart._id}}', '{{this.product._id}}')">Eliminar</button>
+    </li>
+    {{/each}}
+  </ul>
+  <p>Total: $<span id="cartTotal">{{calculateTotal cart.products}}</span></p>
+  <button onclick="clearCart('{{cart._id}}')">Vaciar Carrito</button>
+{{else}}
+  <p>El carrito está vacío</p>
+{{/if}}
+
+<script>
+function removeFromCart(cartId, productId) {
+  fetch(`/api/carts/${cartId}/products/${productId}`, {
+    method: 'DELETE',
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      const productElement = document.querySelector(`li[data-product-id="${productId}"]`);
+      productElement.remove();
+      updateCartTotal();
+    } else {
+      console.error('Error al eliminar producto:', data.error);
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function updateQuantity(cartId, productId, currentQuantity, action) {
+  const newQuantity = action === 'increase' ? currentQuantity + 1 : Math.max(1, currentQuantity - 1);
+  
+  fetch(`/api/carts/${cartId}/products/${productId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ quantity: newQuantity }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      const productElement = document.querySelector(`li[data-product-id="${productId}"]`);
+      productElement.querySelector('.quantity').textContent = newQuantity;
+      const price = parseFloat(productElement.querySelector('p').textContent.split('$')[1]);
+      productElement.querySelector('.subtotal').textContent = (price * newQuantity).toFixed(2);
+      updateCartTotal();
+    } else {
+      console.error('Error al actualizar cantidad:', data.error);
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function clearCart(cartId) {
+  fetch(`/api/carts/${cartId}`, {
+    method: 'DELETE',
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'success') {
+      document.getElementById('cartList').innerHTML = '';
+      document.getElementById('cartTotal').textContent = '0.00';
+    } else {
+      console.error('Error al vaciar el carrito:', data.error);
+    }
+  })
+  .catch(error => console.error('Error:', error));
+}
+
+function updateCartTotal() {
+  const subtotals = Array.from(document.querySelectorAll('.subtotal')).map(el => parseFloat(el.textContent));
+  const total = subtotals.reduce((acc, curr) => acc + curr, 0);
+  document.getElementById('cartTotal').textContent = total.toFixed(2);
+}
+
+// Helpers de Handlebars (asegúrate de registrarlos en tu configuración de Express-Handlebars)
+Handlebars.registerHelper('multiply', function(a, b) {
+  return (a * b).toFixed(2);
+});
+
+Handlebars.registerHelper('calculateTotal', function(products) {
+  return products.reduce((total, item) => total + (item.product.price * item.quantity), 0).toFixed(2);
+});
+</script>

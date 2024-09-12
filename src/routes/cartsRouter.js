@@ -1,58 +1,75 @@
-import express from 'express'
-import { cartsManager } from '../dao/cartsManager.js'
-import { productsManager } from '../dao/productsManager.js'
+import express from 'express';
+import { CartManager } from '../dao/cartsManager.js';
 
-const router = express.Router()
-
-router.get('/', async (req, res) => {
-  let carts = await cartsManager.readFile()
-  res.json(carts)
-})
+const router = express.Router();
+const cartManager = new CartManager();
 
 router.post('/', async (req, res) => {
-  let { userId, products } = req.body
-  let newCart = await cartsManager.addItem({ userId, products })
-  let io = req.app.get('socketio')
-  let updatedCart = await cartsManager.readFile()
-  io.emit('cart', updatedCart)
-  res.status(201).json(newCart)
-})
+    try {
+        const newCart = await cartManager.createCart();
+        res.status(201).json({ status: 'success', payload: newCart });
+    } catch (error) {
+        res.status(400).json({ status: 'error', error: error.message });
+    }
+});
 
-router.get('/:id', async (req, res) => {
-  let cart = await cartsManager.getItemById(parseInt(req.params.id))
-  if (cart) {
-    res.json(cart)
-  } else {
-    res.status(404).json({ message: 'Carrito no encontrado' })
-  }
-})
+router.get('/:cid', async (req, res) => {
+    try {
+        const cart = await cartManager.getCartById(req.params.cid);
+        if (!cart) {
+            return res.status(404).json({ status: 'error', error: 'Carrito no encontrado' });
+        }
+        res.json({ status: 'success', payload: cart });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
-router.post('/:id/product/:productId', async (req, res) => {
-  let cart = await cartsManager.getItemById(parseInt(req.params.id))
-  let product = await productsManager.getItemById(parseInt(req.params.productId))
+router.post('/:cid/product/:pid', async (req, res) => {
+    try {
+        const { quantity } = req.body;
+        const cart = await cartManager.addProductToCart(req.params.cid, req.params.pid, quantity);
+        res.json({ status: 'success', payload: cart });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
-  if (!cart || !product) {
-    return res.status(404).json({ message: 'Carrito o producto no encontrado' })
-  }
+router.delete('/:cid/products/:pid', async (req, res) => {
+    try {
+        const cart = await cartManager.removeProductFromCart(req.params.cid, req.params.pid);
+        res.json({ status: 'success', payload: cart });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
-  let existingProductIndex = cart.products.findIndex(p => p.id === product.id)
+router.put('/:cid', async (req, res) => {
+    try {
+        const cart = await cartManager.updateCart(req.params.cid, req.body.products);
+        res.json({ status: 'success', payload: cart });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
-  if (existingProductIndex !== -1) {
-    cart.products[existingProductIndex].quantity += 1
-  } else {
-    cart.products.push({ ...product, quantity: 1 })
-  }
+router.put('/:cid/products/:pid', async (req, res) => {
+    try {
+        const { quantity } = req.body;
+        const cart = await cartManager.updateProductQuantity(req.params.cid, req.params.pid, quantity);
+        res.json({ status: 'success', payload: cart });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
-  let updatedCart = await cartsManager.updateItem(cart.id, cart)
-  res.json(updatedCart)
-})
+router.delete('/:cid', async (req, res) => {
+    try {
+        const cart = await cartManager.clearCart(req.params.cid);
+        res.json({ status: 'success', message: 'Todos los productos han sido eliminados del carrito' });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
-router.delete('/:id', async (req, res) => {
-  await cartsManager.deleteItem(parseInt(req.params.id))
-  let io = req.app.get('socketio')
-  let updatedCarts = await cartsManager.readFile()
-  io.emit('products', updatedCarts)
-  res.status(204).end()
-})
-
-export default router
+export default router;

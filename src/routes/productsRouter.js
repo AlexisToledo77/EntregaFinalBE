@@ -1,52 +1,74 @@
-import express from 'express'
-import { productsManager } from '../dao/productsManager.js'
+import express from 'express';
+import { ProductManager } from '../dao/productsManager.js';
 
-const router = express.Router()
-const products = await productsManager.readFile()
+const router = express.Router();
+const productManager = new ProductManager();
 
 router.get('/', async (req, res) => {
-  let products = await productsManager.readFile()
-  res.json(products)
-})
+    try {
+        const { limit = 10, page = 1, sort, query } = req.query;
+        const result = await productManager.getProducts(limit, page, sort, query);
 
-router.get("/:id", (req, res) => {
-  let { id } = req.params
-  let producto = products.find(p => p.id === parseInt(id))
-  if (producto) {
-      res.setHeader('Content-Type', 'application/json')
-      return res.status(200).json({ payload: producto })
-  } else {
-      return res.status(404).json({ error: 'Producto no encontrado' })
-  }
-})
+        res.json({
+            status: 'success',
+            payload: result.docs,
+            totalPages: result.totalPages,
+            prevPage: result.prevPage,
+            nextPage: result.nextPage,
+            page: result.page,
+            hasPrevPage: result.hasPrevPage,
+            hasNextPage: result.hasNextPage,
+            prevLink: result.hasPrevPage ? `/api/products?page=${result.prevPage}&limit=${limit}&sort=${sort}&query=${query}` : null,
+            nextLink: result.hasNextPage ? `/api/products?page=${result.nextPage}&limit=${limit}&sort=${sort}&query=${query}` : null
+        });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
+
+router.get('/:pid', async (req, res) => {
+    try {
+        const product = await productManager.getProductById(req.params.pid);
+        if (!product) {
+            return res.status(404).json({ status: 'error', error: 'Producto no encontrado' });
+        }
+        res.json({ status: 'success', payload: product });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
 router.post('/', async (req, res) => {
-  let { name, price, quantity } = req.body
-  let newProduct = await productsManager.addItem({ name, price, quantity: quantity || 1 })
-  let io = req.app.get('socketio')
-  let updatedProducts = await productsManager.readFile()
-  io.emit('products', updatedProducts)
-  res.status(201).json(newProduct)
-})
+    try {
+        const newProduct = await productManager.addProduct(req.body);
+        res.status(201).json({ status: 'success', payload: newProduct });
+    } catch (error) {
+        res.status(400).json({ status: 'error', error: error.message });
+    }
+});
 
-router.put('/:id', async (req, res) => {
-  let updatedProduct = await productsManager.updateItem(parseInt(req.params.id), req.body)
-  if (updatedProduct) {
-    let io = req.app.get('socketio')
-    let updatedProducts = await productsManager.readFile()
-    io.emit('products', updatedProducts)
-    res.json(updatedProduct)
-  } else {
-    res.status(404).json({ message: 'Producto no encontrado' })
-  }
-})
+router.put('/:pid', async (req, res) => {
+    try {
+        const updatedProduct = await productManager.updateProduct(req.params.pid, req.body);
+        if (!updatedProduct) {
+            return res.status(404).json({ status: 'error', error: 'Producto no encontrado' });
+        }
+        res.json({ status: 'success', payload: updatedProduct });
+    } catch (error) {
+        res.status(400).json({ status: 'error', error: error.message });
+    }
+});
 
-router.delete('/:id', async (req, res) => {
-  await productsManager.deleteItem(parseInt(req.params.id))
-  let io = req.app.get('socketio')
-  let updatedProducts = await productsManager.readFile()
-  io.emit('products', updatedProducts)
-  res.status(204).end()
-})
+router.delete('/:pid', async (req, res) => {
+    try {
+        const deletedProduct = await productManager.deleteProduct(req.params.pid);
+        if (!deletedProduct) {
+            return res.status(404).json({ status: 'error', error: 'Producto no encontrado' });
+        }
+        res.json({ status: 'success', message: 'Producto eliminado' });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
-export default router
+export default router;
