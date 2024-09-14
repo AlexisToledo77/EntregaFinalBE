@@ -17,3 +17,4 @@ export const UserModel = mongoose.model(
     usersColl, 
     usersSchema
 )
+
