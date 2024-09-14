@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import productModel from "./productModel"
 
 const cartColl = "cart"
 
@@ -16,14 +15,11 @@ const cartSchema = new mongoose.Schema({
     ],
 })
 
-cartSchema.pre("find",function(){
+cartSchema.pre("findById",function(){
     this.populate("products.product")
 })
 
-const productModel = (
-    "product",
-    cartSchema
-)
+
 
 export const CartModel = mongoose.model(
     cartColl, 
