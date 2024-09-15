@@ -6,11 +6,11 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import viewsRouter from './routes/viewsRouter.js'
 import productsRouter from './routes/productsRouter.js'
-import cartsRouter from './routes/cartsRouter.js'
+import cartRouter from './routes/cartsRouter.js'
 import { router as usersRouter } from './routes/usersRouter.js'
 import { productsManager } from './dao/productsManager.js'
 import { userManager } from './dao/userManager.js'
-import { cartsManager } from './dao/cartsManager.js'
+import { CartManager } from './dao/cartsManager.js'
 import { config } from './config/config.js'
 import { connDB} from "./connDB.js"
 
@@ -24,7 +24,7 @@ const server = createServer(app)
 const io = new Server(server)
 
 const httpServer = app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`Servidor corriendo en puerto ${PORT}`)
 })
 
 connDB()
@@ -41,7 +41,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', viewsRouter)
 app.use('/api/products', productsRouter)
-app.use('/api/carts', cartsRouter)
+app.use('/api/carts', cartRouter)
 app.use('/api/users', usersRouter)
 
 
@@ -76,14 +76,14 @@ io.on('connection', async (socket) => {
   })
 
   socket.on('newCart', async (cart) => {
-    let newCart = await cartsManager.addItem(cart)
-    let updatedCart = await cartsManager.readFile()
+    let newCart = await CartManager.addItem(cart)
+    let updatedCart = await CartManager.readFile()
     io.emit('cart', updatedCart)
   })
 
   socket.on('deleteCarts', async (cart) => {
-    await cartsManager.deleteItem(cart)
-    let updatedCarts = await cartsManager.readFile()
+    await CartManager.deleteItem(cart)
+    let updatedCarts = await CartManager.readFile()
     io.emit('cart', updatedCarts)
   })
 
@@ -91,7 +91,3 @@ io.on('connection', async (socket) => {
 
 app.set('socketio', io)
 
-// const PORT = process.env.PORT || 3000
-// server.listen(PORT, () => {
-//   console.log(`Servidor corriendo en http://localhost:${PORT}`)
-// })

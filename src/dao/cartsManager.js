@@ -1,63 +1,69 @@
-import { CartModel } from "../models/cartModel.js"
+import { cartsModel } from "../models/cartModel.js"
 
-export class CartsManager {
+export class CartManager{
+    static async getById(id){
+        return await cartsModel.findOne({_id:id})
+    }
+
+    static async create(){
+        return await cartsModel.create({products:[]})
+    }
+
+    static async update(id, cart){
+        return await cartsModel.updateOne({_id:id}, cart)
+    }
     static async getCart() {
-        return await CartModel.find().lean()
+        return await cartsModel.find().lean()
     }
 
     static async getCartsBy(filtro = {}) {
-        return await CartModel.findOne(filtro).lean()
+        return await cartsModel.findOne(filtro).lean()
     }
 
     static async createCart() {
-        return await CartModel.create()
+        return await cartsModel.create()
     }
 
     static async addCart(cart){
-        return await CartModel.create({product:[]});
+        return await cartsModel.create({product:[]})
     }
 
     static async update(id, aModificar = {}) {
-        return await CartModel.findByIdAndUpdate(id, aModificar, { new: true }).lean()
+        return await cartsModel.findByIdAndUpdate(id, aModificar, { new: true }).lean()
     }
 
     static async deleteCart(id) {
-        return await CartModel.findByIdAndDelete(id).lean()
+        return await cartsModel.findByIdAndDelete(id).lean()
     }
 
     static async paginate(filter, options) {
         try {
-            return await CartModel.paginate(filter, options);
+            return await cartsModel.paginate(filter, options)
         } catch (error) {
             console.log(error);
-            throw new Error('Error al paginar productos');
+            throw new Error('Error al paginar productos')
         }
     }
 
     static async addProductInCart({_id: cartId}) {
-        let cart = await this.getCartById(cartId);
+        let cart = await this.getCartById(cartId)
         if (!cart) {
-            // Si el carrito no existe, créalo
-            let newCart = await this.addCart({ products: [{ product: obj.product, quantity: obj.quantity }] });
+            
+            let newCart = await this.addCart({ products: [{ product: obj.product, quantity: obj.quantity }] })
             return newCart;
         }
 
-        const productIndex = cart.products.findIndex(item => item.product.toString() === obj.product);
+        const productIndex = cart.products.findIndex(item => item.product.toString() === obj.product)
 
         if (productIndex !== -1) {
-            // Si el producto ya está en el carrito, actualiza la cantidad
-            cart.products[productIndex].quantity += obj.quantity;
+            cart.products[productIndex].quantity += obj.quantity
         } else {
-            // Si el producto no está en el carrito, agrégalo
-            cart.products.push({ product: obj.product, quantity: obj.quantity });
+            cart.products.push({ product: obj.product, quantity: obj.quantity })
         }
 
-        const result = await cartModel.updateOne({ _id: cid }, { products: cart.products });
-        return result;
+        const result = await cartsModel.updateOne({ _id: cid }, { products: cart.products })
+        return result
     }
 
 }
 
-
-
-export const cartsManager = new CartsManager('./src/data/carts.json')

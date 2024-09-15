@@ -1,13 +1,52 @@
 <h1>Productos en Tiempo Real</h1>
-<form id="productForm">
-    <input type="text" id="productName" placeholder="Nombre del producto" required>
-    <input type="number" id="productPrice" placeholder="Precio" required>
-    <input type="number" id="productQuantity" placeholder="Cantidad" value="1" min="1" required>
+<div id="productList"></div>
+
+<h2>Agregar Nuevo Producto</h2>
+<form id="addProductForm">
+    <input type="text" id="title" placeholder="Título" required>
+    <input type="text" id="description" placeholder="Descripción" required>
+    <input type="text" id="code" placeholder="Código" required>
+    <input type="number" id="price" placeholder="Precio" required>
+    <input type="number" id="stock" placeholder="Stock" required>
+    <input type="text" id="category" placeholder="Categoría" required>
     <button type="submit">Agregar Producto</button>
 </form>
-<ul id="productList"></ul>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/realTimeProducts.js"></script>
 
 <button onclick="window.location.href='/'">Volver a Home</button>
+<script>
+const socket = io();
+
+socket.on('updateProducts', (products) => {
+    const productList = document.getElementById('productList');
+    productList.innerHTML = products.map(product => `
+        <div>
+            <h3>${product.title}</h3>
+            <p>Precio: $${product.price}</p>
+            <p>Stock: ${product.stock}</p>
+            <button onclick="deleteProduct('${product._id}')">Eliminar</button>
+        </div>
+    `).join('');
+});
+
+document.getElementById('addProductForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const product = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        code: document.getElementById('code').value,
+        price: parseFloat(document.getElementById('price').value),
+        stock: parseInt(document.getElementById('stock').value),
+        category: document.getElementById('category').value
+    };
+    socket.emit('addProduct', product);
+    e.target.reset();
+});
+
+function deleteProduct(id) {
+    socket.emit('deleteProduct', id);
+}
+
+socket.emit('requestInitialProducts');
+</script>

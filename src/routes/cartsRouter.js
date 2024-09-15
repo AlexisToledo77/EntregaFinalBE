@@ -1,82 +1,117 @@
 import express from 'express'
-import { CartsManager } from '../dao/cartsManager.js'
-
+import { isValidObjectId } from 'mongoose'
+import { procesaErrores } from '../utils.js'
+import { CartManager } from '../dao/cartsManager.js'
+import { ProductsManager } from '../dao/productsManager.js'
 
 const router = express.Router()
 
-router.get('/', async (req, res) => {
-    try {
-        const carts = await CartsManager.getCart()
-        res.status(200).json({ status: 'success', payload: carts })
-      } catch(err) {
-        res.status(404).json({ status: 'error', error: err.message })
-      }
-    }
-)
-
-router.post('/', async (req, res) => {
-    try {
-        await CartsManager.createCart()
-        res.status(200).json({ status: 'success', mesagge: 'Cart created successfully' })
-      } catch(err) {
-        res.status(404).json({ status: 'No se puede crear Carrito', error: err.message })
-      }
-    }
-)
-
-router.post('/:cid/product/:pid', async (req, res) => {
-    let cartId = req.params.cid
-    let productId = req.params.pid
-    try {
-      const cart = await CartsManager.addProductInCart()
-
-      const productIndex = cart.products.findIndex(
-        (item) => item.product.toString() == productId
-      );
-
-      if (productIndex !== -1) {
-        cart.products[productIndex].quantity++;
-      } else {
-        cart.products.push({ product: productId, quantity: 1 });
-      }
-      await cartModel.updateOne({_id: cartId}, cart)
-
-      res.status(200).json({ status: 'success', payload: cart})
-    } catch(err) {
-      res.status(404).json({ status: 'error', error: err.message })
-    }
-  }
-)
-
-
-
-// router.post('/', async (req, res) => {
-//   let { mail, product, quantity } = req.body
-//   let newCart = await CartsManager.addItem({ mail, product, quantity })
-//   let io = req.app.get('socketio')
-//   let updatedCart = await CartsManager.readFile()
-//   io.emit('cart', updatedCart)
-//   res.status(201).json(newCart)
-// })
 
 router.get('/:id', async (req, res) => {
-  let cart = await CartsManager.getItemById(parseInt(req.params.id))
-  if (cart) {
-    res.json(cart)
-  } else {
-    res.status(404).json({ message: 'Carrito no encontrado' })
-  }
-})
-router.post('/:cid/product/:pid', async (req, res) => {
+
+    let { id } = req.params
+    if (!isValidObjectId(id)) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `Ingrese un id válido de MongoDB` })
+    }
+
     try {
-        const { cid, pid } = req.params;
-        const { quantity } = req.body;
-        const result = await cartManager.addProductInCart(cid, { product: pid, quantity: quantity || 1 });
-        res.send({ status: "success", payload: result });
+        let cart = await CartManager.getById(id)
+        res.setHeader('Content-Type', 'application/json')
+        res.status(200).json({ cart })
     } catch (error) {
-        res.status(500).send({ status: "error", error: error.message });
+        return procesaErrores(res, error)
     }
 })
 
+router.post("/", async (req, res) => {
+    try {
+        let cart = await CartManager.create()
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(201).json({ cart });
+    } catch (error) {
+        return procesaErrores(res, error)
+    }
+})
+
+router.post("/:cid/product/:pid", async (req, res) => {
+    let { pid, cid } = req.params
+    if (!isValidObjectId(pid) || !isValidObjectId(cid)) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `Algún id tiene formato inválido. Verifique...!!!` })
+    }
+
+    try {
+        let cart = await CartManager.getById(cid)
+        if (!cart) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(400).json({ error: `No existe cart con id ${cid}` })
+        }
+
+        let product = await ProductsManager.getBy({ _id: pid })
+        if (!product) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(400).json({ error: `No existe product con id ${pid}` })
+        }
+
+        console.log(JSON.stringify(cart, null, 5))
+        let indiceProducto = cart.products.findIndex(p => p.product._id == pid)
+        if (indiceProducto === -1) {
+            cart.products.push({
+                product: pid, quantity: 1
+            })
+        } else {
+            cart.products[indiceProducto].quantity++
+        }
+
+        let resultado = await CartManager.update(cid, cart)
+        if (resultado.modifiedCount > 0) {
+            res.setHeader('Content-Type', 'application/json')
+            return res.status(200).json({ message: "Cart actualizado" })
+        } else {
+            res.setHeader('Content-Type', 'application/json')
+            return res.status(400).json({ error: `Fallo en la actualizacion` })
+        }
+    } catch (error) {
+        return procesaErrores(res, error)
+    }
+})
+
+router.delete('/:cid/products/:pid', async (req, res) => {
+    try {
+        let cart = await cartManager.removeProductFromCart(req.params.cid, req.params.pid)
+        res.json({ status: 'success', payload: cart });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message })
+    }
+})
+
+router.put('/:cid', async (req, res) => {
+    try {
+        let cart = await cartManager.updateCart(req.params.cid, req.body.products)
+        res.json({ status: 'success', payload: cart })
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message })
+    }
+});
+
+router.put('/:cid/products/:pid', async (req, res) => {
+    try {
+        let { quantity } = req.body
+        let cart = await cartManager.updateProductQuantity(req.params.cid, req.params.pid, quantity)
+        res.json({ status: 'success', payload: cart })
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message })
+    }
+})
+
+router.delete('/:cid', async (req, res) => {
+    try {
+        let cart = await cartManager.clearCart(req.params.cid)
+        res.json({ status: 'success', message: 'Todos los productos han sido eliminados del carrito' })
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message })
+    }
+})
 
 export default router

@@ -8,7 +8,10 @@ export class ProductsManager {
     static async getProductsBy(filtro = {}) {
       return await ProductModel.findOne(filtro).lean()
     }
-  
+
+    static async getBy(filtro={}){
+      return await ProductModel.findOne(filtro).lean()
+  }
     static async createProducts(product) {
       return await ProductModel.create(product)
     }
@@ -23,10 +26,10 @@ export class ProductsManager {
 
     static async paginate(filter, options) {
         try {
-            return await ProductModel.paginate(filter, options);
+            return await ProductModel.paginate(filter, options)
         } catch (error) {
             console.log(error);
-            throw new Error('Error al paginar productos');
+            throw new Error('Error al paginar productos')
         }
     }
   }

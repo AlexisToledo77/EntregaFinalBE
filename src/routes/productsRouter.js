@@ -1,23 +1,13 @@
 import express from 'express'
 import { ProductsManager } from '../dao/productsManager.js'
-import { isValidObjectId } from 'mongoose';
+import { isValidObjectId } from 'mongoose'
 
 const router = express.Router()
 
-// router.get('/', async (req, res) => {
-//     try{
-//       let products = await ProductsManager.getProducts()
-//       res.setHeader('Content-Type','application/json')
-//       return res.status(200).json({products})
-//     } catch (error){
-//       console.log(error)
-//       res.status(500).json({message: 'Error al obtener los productos'})
-//     }
-//   })
 
   router.get('/', async (req, res) => {
     try {
-        let { limit = 10, page = 1, sort, query } = req.query;
+        let { limit = 10, page = 1, sort, query } = req.query
         let options = {
             limit: parseInt(limit),
             page: parseInt(page),
@@ -25,10 +15,10 @@ const router = express.Router()
         };
 
         if (sort) {
-            options.sort = { price: sort === 'asc' ? 1 : -1 };
+            options.sort = { price: sort === 'asc' ? 1 : -1 }
         }
 
-        const filter = {};
+        const filter = {}
         if (query) {
             filter.$or = [
                 { category: { $regex: query, $options: 'i' } },
@@ -36,9 +26,9 @@ const router = express.Router()
             ];
         }
 
-        let result = await ProductsManager.paginate(filter, options);
+        let result = await ProductsManager.paginate(filter, options)
 
-        let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`;
+        let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
 
         let response = {
             status: 'success',
@@ -53,39 +43,39 @@ const router = express.Router()
             nextLink: result.hasNextPage ? `${baseUrl}?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}` : null
         }
 
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(200).json(response);
+        res.setHeader('Content-Type', 'application/json')
+        return res.status(200).json(response)
     } catch (error) {
-        console.log(error);
-        res.setHeader('Content-Type', 'application/json');
+        console.log(error)
+        res.setHeader('Content-Type', 'application/json')
         return res.status(500).json({
             status: 'error',
             error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
             detalle: error.message
-        });
+        })
     }
-});
+})
 
 
 router.get('/:id',async(req,res)=>{
 
     let {id}=req.params
     if(!isValidObjectId(id)){
-        res.setHeader('Content-Type','application/json');
+        res.setHeader('Content-Type','application/json')
         return res.status(400).json({error:`id formato inválido`})
     }
   
     try {
         let products=await ProductsManager.getProductsBy({_id:id})
         if(!products){
-            res.setHeader('Content-Type','application/json');
+            res.setHeader('Content-Type','application/json')
             return res.status(400).json({error:`No existen usuarios con id ${id}`})
         }
-        res.setHeader('Content-Type','application/json');
+        res.setHeader('Content-Type','application/json')
         return res.status(200).json({products});
     } catch (error) {
         console.log(error);
-        res.setHeader('Content-Type','application/json');
+        res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
                 error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
@@ -98,7 +88,7 @@ router.get('/:id',async(req,res)=>{
   router.post("/", async(req, res)=>{
     let {title, description, ...otros}=req.body
     if(!title){
-        res.setHeader('Content-Type','application/json');
+        res.setHeader('Content-Type','application/json')
         return res.status(400).json({error:`Complete nombre del producto`})
     }
 
@@ -111,11 +101,11 @@ router.get('/:id',async(req,res)=>{
         }        
 
         let newProduct=await ProductsManager.createProducts({title, description, ...otros})
-        res.setHeader('Content-Type','application/json');
-        return res.status(201).json({newProduct});
+        res.setHeader('Content-Type','application/json')
+        return res.status(201).json({newProduct})
     } catch (error) {
-        console.log(error);
-        res.setHeader('Content-Type','application/json');
+        console.log(error)
+        res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
                 error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
@@ -157,17 +147,17 @@ router.put("/:id", async(req, res)=>{
 router.delete("/:id", async(req, res)=>{
     let{id}=req.params
     if(!isValidObjectId(id)){
-        res.setHeader('Content-Type','application/json');
+        res.setHeader('Content-Type','application/json')
         return res.status(400).json({error:`ID invalido`})
     }
 
     try {
         let productEliminado=await ProductsManager.delete(id)  
-        res.setHeader('Content-Type','application/json');
-        return res.status(200).json({productEliminado});      
+        res.setHeader('Content-Type','application/json')
+        return res.status(200).json({productEliminado})    
     } catch (error) {
         console.log(error);
-        res.setHeader('Content-Type','application/json');
+        res.setHeader('Content-Type','application/json')
         return res.status(500).json(
             {
                 error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,

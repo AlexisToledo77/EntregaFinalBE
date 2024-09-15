@@ -85,15 +85,6 @@ router.delete("/:id", async(req, res)=>{
 })
 
 
-// router.delete('/:id', async (req, res) => {
-//   await UserManager.deleteItem(parseInt(req.params.id))
-//   let io = req.app.get('socketio')
-//   let deleteUser = await UserManager.readFile()
-//   io.emit('user', deleteUser)
-//   res.status(204).end()
-// })
-
-
 
 
 

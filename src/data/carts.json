@@ -1,17 +1,9 @@
-[
-  {
-    "userId": "1",
-    "products": "1, 2, 3",
-    "id": 1
-  },
-  {
-    "userId": "2",
-    "products": "3",
-    "id": 2
-  },
-  {
-    "userId": "3",
-    "products": "3",
-    "id": 3
-  }
-]
+{
+    "userId" : "66e5092577186cd85d693709",
+    "products": [
+        {
+            "product": "66e5d0ed77186cd85d693765", 
+            "quantity": 1
+        }
+    ]
+}

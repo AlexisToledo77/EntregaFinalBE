@@ -1,27 +1,28 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose"
 
-const cartColl = "cart"
-
-const cartSchema = new mongoose.Schema({
-    mail: { type: String, required: true },
-    products: [
-        {
-            product: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'products'
-            },
-            quantity: { type: Number, default: 1 }
+const cartSchema=new mongoose.Schema(
+    {
+        products:{
+            type:[
+                {
+                    product: {
+                        type: mongoose.Schema.Types.ObjectId, 
+                        ref: "products"
+                    }, 
+                    quantity: Number
+                }
+            ]
         }
-    ],
+    },
+    {
+        timestamps:true
+    }
+)
+
+cartSchema.pre("findOne", function(){
+    this.populate("products.product").lean()
 })
 
-cartSchema.pre("findById",function(){
-    this.populate("products.product")
-})
-
-
-
-export const CartModel = mongoose.model(
-    cartColl, 
-    cartSchema
+export const cartsModel=mongoose.model(
+    "carts", cartSchema
 )

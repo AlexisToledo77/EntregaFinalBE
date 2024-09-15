@@ -80,18 +80,3 @@ function clearCart(cartId) {
   .catch(error => console.error('Error:', error));
 }
 
-function updateCartTotal() {
-  const subtotals = Array.from(document.querySelectorAll('.subtotal')).map(el => parseFloat(el.textContent));
-  const total = subtotals.reduce((acc, curr) => acc + curr, 0);
-  document.getElementById('cartTotal').textContent = total.toFixed(2);
-}
-
-// Helpers de Handlebars (asegúrate de registrarlos en tu configuración de Express-Handlebars)
-Handlebars.registerHelper('multiply', function(a, b) {
-  return (a * b).toFixed(2);
-});
-
-Handlebars.registerHelper('calculateTotal', function(products) {
-  return products.reduce((total, item) => total + (item.product.price * item.quantity), 0).toFixed(2);
-});
-</script>

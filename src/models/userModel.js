@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import mongoose from 'mongoose'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const usersColl="users"
 const usersSchema = new mongoose.Schema({
@@ -11,7 +11,7 @@ const usersSchema = new mongoose.Schema({
 }
 );
 
-usersSchema.plugin(mongoosePaginate);
+usersSchema.plugin(mongoosePaginate)
 
 export const UserModel = mongoose.model(
     usersColl, 
