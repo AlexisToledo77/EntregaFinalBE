@@ -1,16 +1,16 @@
 import { cartsModel } from "../models/cartModel.js"
 
-export class CartManager{
-    static async getById(id){
-        return await cartsModel.findOne({_id:id})
+export class CartManager {
+    static async getById(id) {
+        return await cartsModel.findOne({ _id: id })
     }
 
-    static async create(){
-        return await cartsModel.create({products:[]})
+    static async create() {
+        return await cartsModel.create({ products: [] })
     }
 
-    static async update(id, cart){
-        return await cartsModel.updateOne({_id:id}, cart)
+    static async update(id, cart) {
+        return await cartsModel.updateOne({ _id: id }, cart)
     }
     static async getCart() {
         return await cartsModel.find().lean()
@@ -24,18 +24,30 @@ export class CartManager{
         return await cartsModel.create()
     }
 
-    static async addCart(cart){
-        return await cartsModel.create({product:[]})
+    static async addCart(cart) {
+        return await cartsModel.create({ product: [] })
     }
 
-    static async update(id, aModificar = {}) {
-        return await cartsModel.findByIdAndUpdate(id, aModificar, { new: true }).lean()
+    static async updateProductQuantity(cid, pid, quantity) {    
+        return await cartsModel.findOneAndUpdate(
+            { _id: cid, 'products.product': pid },
+            { $set: { 'products.$.quantity': quantity } },
+            { new: true }
+        ).lean()
     }
 
-    static async deleteCart(id) {
+    static async clearCart(id) {
         return await cartsModel.findByIdAndDelete(id).lean()
     }
 
+    static async removeProductFromCart(cid, pid) {
+        return await cartsModel.findByIdAndUpdate(
+            cid,
+            { $pull: { products: { _id: pid } } },
+            { new: true }
+        ).lean()
+    }
+clearCart
     static async paginate(filter, options) {
         try {
             return await cartsModel.paginate(filter, options)
@@ -45,10 +57,10 @@ export class CartManager{
         }
     }
 
-    static async addProductInCart({_id: cartId}) {
+    static async addProductInCart({ _id: cartId }) {
         let cart = await this.getCartById(cartId)
         if (!cart) {
-            
+
             let newCart = await this.addCart({ products: [{ product: obj.product, quantity: obj.quantity }] })
             return newCart;
         }

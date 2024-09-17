@@ -8,9 +8,6 @@ import viewsRouter from './routes/viewsRouter.js'
 import productsRouter from './routes/productsRouter.js'
 import cartRouter from './routes/cartsRouter.js'
 import { router as usersRouter } from './routes/usersRouter.js'
-import { productsManager } from './dao/productsManager.js'
-import { userManager } from './dao/userManager.js'
-import { CartManager } from './dao/cartsManager.js'
 import { config } from './config/config.js'
 import { connDB} from "./connDB.js"
 
@@ -27,8 +24,6 @@ const httpServer = app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`)
 })
 
-connDB()
-
 app.engine('handlebars', engine())
 app.set('view engine', 'handlebars')
 app.set('views', path.join(__dirname, 'views'))
@@ -44,50 +39,6 @@ app.use('/api/products', productsRouter)
 app.use('/api/carts', cartRouter)
 app.use('/api/users', usersRouter)
 
+connDB()
 
-io.on('connection', async (socket) => {
-  console.log('Cliente conectado')
-
-  let products = await productsManager.readFile()
-  socket.emit('products', products)
-
-  socket.on('newProduct', async (product) => {
-    let newProduct = await productsManager.addItem(product)
-    let updatedProducts = await productsManager.readFile()
-    io.emit('products', updatedProducts)
-  })
-
-  socket.on('deleteProduct', async (productId) => {
-    await productsManager.deleteItem(productId)
-    let updatedProducts = await productsManager.readFile()
-    io.emit('products', updatedProducts)
-  })
-
-  socket.on('newUser', async (user) => {
-    let newUser = await userManager.addItem(user)
-    let updatedUser = await userManager.readFile()
-    io.emit('user', updatedUser)
-  })
-
-  socket.on('deleteUser', async (user) => {
-    await userManager.deleteItem(user)
-    let deleteUser = await userManager.readFile()
-    io.emit('user', deleteUser)
-  })
-
-  socket.on('newCart', async (cart) => {
-    let newCart = await CartManager.addItem(cart)
-    let updatedCart = await CartManager.readFile()
-    io.emit('cart', updatedCart)
-  })
-
-  socket.on('deleteCarts', async (cart) => {
-    await CartManager.deleteItem(cart)
-    let updatedCarts = await CartManager.readFile()
-    io.emit('cart', updatedCarts)
-  })
-
-})
-
-app.set('socketio', io)
 

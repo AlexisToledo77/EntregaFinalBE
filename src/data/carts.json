@@ -1,9 +1,25 @@
 {
-    "userId" : "66e5092577186cd85d693709",
-    "products": [
-        {
-            "product": "66e5d0ed77186cd85d693765", 
-            "quantity": 1
-        }
-    ]
+    "userId": "66e5092577186cd85d693709",
+        "products": [
+            {
+                "product": "66e5d0ed77186cd85d693769",
+                "quantity": 1,
+                "_id": "66e8c7ba6e6b69aba9f40d1a"
+            },
+            {
+                "product": "66e5d0ed77186cd85d693765",
+                "quantity": 3,
+                "_id": "66e8eeb81c8b5258c5258d81"
+            },
+            {
+                "product": "66e5d0ed77186cd85d69376a",
+                "quantity": 3,
+                "_id": "66e8eedc1c8b5258c5258d9a"
+            },
+            {
+                "product": "66e5d0ed77186cd85d693775",
+                "quantity": 1,
+                "_id": "66e8f68a39ca1517953fd3ea"
+            }
+        ]
 }
