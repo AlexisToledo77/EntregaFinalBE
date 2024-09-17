@@ -1,6 +1,6 @@
 import express from 'express'
 import { UserManager } from '../dao/userManager.js'
-import { isValidObjectId } from 'mongoose';
+import { isValidObjectId } from 'mongoose'
 
 export const router = express.Router()
 
@@ -28,21 +28,21 @@ router.get('/:id',async(req,res)=>{
 
   let {id}=req.params
   if(!isValidObjectId(id)){
-      res.setHeader('Content-Type','application/json');
+      res.setHeader('Content-Type','application/json')
       return res.status(400).json({error:`id formato inválido`})
   }
 
   try {
       let user=await UserManager.getUsersBy({_id:id})
       if(!user){
-          res.setHeader('Content-Type','application/json');
+          res.setHeader('Content-Type','application/json')
           return res.status(400).json({error:`No existen usuarios con id ${id}`})
       }
-      res.setHeader('Content-Type','application/json');
-      return res.status(200).json({user});
+      res.setHeader('Content-Type','application/json')
+      return res.status(200).json({user})
   } catch (error) {
       console.log(error);
-      res.setHeader('Content-Type','application/json');
+      res.setHeader('Content-Type','application/json')
       return res.status(500).json(
           {
               error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
@@ -70,11 +70,11 @@ router.delete("/:id", async(req, res)=>{
   }
   try {
       let userDelete=await UserManager.deleteUser(id)  
-      res.setHeader('Content-Type','application/json');
+      res.setHeader('Content-Type','application/json')
       return res.status(200).json({userDelete});      
   } catch (error) {
       console.log(error);
-      res.setHeader('Content-Type','application/json');
+      res.setHeader('Content-Type','application/json')
       return res.status(500).json(
           {
               error:`No se pudo eliminar  - Intente más tarde, o contacte a su administrador`,

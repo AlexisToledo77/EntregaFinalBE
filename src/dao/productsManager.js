@@ -1,6 +1,7 @@
 import { ProductModel } from "../models/productModel.js"
 
 export class ProductsManager {
+
     static async getProducts() {
       return await ProductModel.find().lean()
     }

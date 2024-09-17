@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 router.post("/", async (req, res) => {
     try {
         let cart = await CartManager.create()
-        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Type', 'application/json')
         return res.status(201).json({ cart });
     } catch (error) {
         return procesaErrores(res, error)
@@ -78,10 +78,10 @@ router.post("/:cid/product/:pid", async (req, res) => {
         let resultado = await CartManager.update(cid, cart)
         if (resultado) {
             res.setHeader('Content-Type', 'application/json');
-            return res.status(200).json({ message: "Carrito actualizado", payload: resultado });
+            return res.status(200).json({ message: "Carrito actualizado", payload: resultado })
         } else {
             res.setHeader('Content-Type', 'application/json');
-            return res.status(400).json({ error: `Fallo en la actualización` });
+            return res.status(400).json({ error: `Fallo en la actualización` })
         }
     } catch (error) {
         return procesaErrores(res, error)

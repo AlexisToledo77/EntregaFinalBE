@@ -17,66 +17,10 @@
   </ul>
   <p>Total: $<span id="cartTotal">{{calculateTotal cart.products}}</span></p>
   <button onclick="clearCart('{{cart._id}}')">Vaciar Carrito</button>
+  <button onclick="window.location.href='/products'">Atras</button>
 {{else}}
   <p>El carrito está vacío</p>
 {{/if}}
 
-<script>
-function removeFromCart(cartId, productId) {
-  fetch(`/api/carts/${cartId}/products/${productId}`, {
-    method: 'DELETE',
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      const productElement = document.querySelector(`li[data-product-id="${productId}"]`);
-      productElement.remove();
-      updateCartTotal();
-    } else {
-      console.error('Error al eliminar producto:', data.error);
-    }
-  })
-  .catch(error => console.error('Error:', error));
-}
 
-function updateQuantity(cartId, productId, currentQuantity, action) {
-  const newQuantity = action === 'increase' ? currentQuantity + 1 : Math.max(1, currentQuantity - 1);
-  
-  fetch(`/api/carts/${cartId}/products/${productId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ quantity: newQuantity }),
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      const productElement = document.querySelector(`li[data-product-id="${productId}"]`);
-      productElement.querySelector('.quantity').textContent = newQuantity;
-      const price = parseFloat(productElement.querySelector('p').textContent.split('$')[1]);
-      productElement.querySelector('.subtotal').textContent = (price * newQuantity).toFixed(2);
-      updateCartTotal();
-    } else {
-      console.error('Error al actualizar cantidad:', data.error);
-    }
-  })
-  .catch(error => console.error('Error:', error));
-}
-
-function clearCart(cartId) {
-  fetch(`/api/carts/${cartId}`, {
-    method: 'DELETE',
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      document.getElementById('cartList').innerHTML = '';
-      document.getElementById('cartTotal').textContent = '0.00';
-    } else {
-      console.error('Error al vaciar el carrito:', data.error);
-    }
-  })
-  .catch(error => console.error('Error:', error));
-}
 

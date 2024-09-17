@@ -62,7 +62,7 @@ router.get('/:id',async(req,res)=>{
     let {id}=req.params
     if(!isValidObjectId(id)){
         res.setHeader('Content-Type','application/json')
-        return res.status(400).json({error:`id formato inválido`})
+        return res.status(400).json({error:`id formato inválido`}) 
     }
   
     try {
@@ -118,7 +118,7 @@ router.get('/:id',async(req,res)=>{
 router.put("/:id", async(req, res)=>{
     let{id}=req.params
     if(!isValidObjectId(id)){
-        res.setHeader('Content-Type','application/json');
+        res.setHeader('Content-Type','application/json')
         return res.status(400).json({error:`ID invalido`})
     }
     let {...aModificar}=req.body
