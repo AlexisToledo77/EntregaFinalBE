@@ -7,15 +7,15 @@ import { ProductsManager } from '../dao/productsManager.js'
 const router = express.Router()
 
 router.get('/', async (req, res) => {
-    try{
-      let carts = await CartManager.getCart()
-      res.setHeader('Content-Type','application/json')
-      return res.status(200).json({carts})
-    } catch (error){
-      console.log(error)
-      res.status(500).json({message: 'Error al obtener usuarios'})
+    try {
+        let carts = await CartManager.getCart()
+        res.setHeader('Content-Type', 'application/json')
+        return res.status(200).json({ carts })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ message: 'Error al obtener usuarios' })
     }
-  })
+})
 
 
 router.get('/:id', async (req, res) => {

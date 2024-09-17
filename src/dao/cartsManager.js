@@ -28,7 +28,7 @@ export class CartManager {
         return await cartsModel.create({ product: [] })
     }
 
-    static async updateProductQuantity(cid, pid, quantity) {    
+    static async updateProductQuantity(cid, pid, quantity) {
         return await cartsModel.findOneAndUpdate(
             { _id: cid, 'products.product': pid },
             { $set: { 'products.$.quantity': quantity } },
@@ -47,7 +47,7 @@ export class CartManager {
             { new: true }
         ).lean()
     }
-clearCart
+
     static async paginate(filter, options) {
         try {
             return await cartsModel.paginate(filter, options)
