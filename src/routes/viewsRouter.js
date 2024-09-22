@@ -20,9 +20,11 @@ router.get('/verUsuarios', async (req, res) => {
 })
 
 router.get('/carts', async (req, res) => {
-  let carts = await CartManager.getCart()
-  res.render('cart', { carts })
+  const cid = "66e8ffe277186cd85d69378d";
+  let cart = await CartManager.getCartById(cid)
+  res.render('cart', { cart })
 })
+
 
 router.get('/carts/:cid', async (req, res) => {
 try {

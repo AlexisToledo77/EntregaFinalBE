@@ -1,26 +1,25 @@
 <h1>Carrito</h1>
 {{#if cart.products.length}}
-  <ul id="cartList">
-    {{#each cart.products}}
-    <li data-product-id="{{this.product._id}}">
-      <h2>{{this.product.title}}</h2>
-      <p>Precio: ${{this.product.price}}</p>
-      <div class="quantity-control">
-        <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'decrease')">-</button>
-        <span class="quantity">{{this.quantity}}</span>
-        <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'increase')">+</button>
-      </div>
-      <p>Subtotal: $<span class="subtotal">{{multiply this.product.price this.quantity}}</span></p>
-      <button onclick="removeFromCart('{{../cart._id}}', '{{this.product._id}}')">Eliminar</button>
-    </li>
-    {{/each}}
-  </ul>
-  <p>Total: $<span id="cartTotal">{{calculateTotal cart.products}}</span></p>
-  <button onclick="clearCart('{{cart._id}}')">Vaciar Carrito</button>
-  <button onclick="window.location.href='/products'">Atras</button>
+<ul id="cartList">
+  {{#each cart.products}}
+  <li data-product-id="{{this.product._id}}">
+    <h2>{{this.product.title}}</h2>
+    <p>Precio: ${{this.product.price}}</p>
+    <div class="quantity-control">
+  <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'decrease')">-</button>
+  <span class="quantity">{{this.quantity}}</span>
+  <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'increase')">+</button>
+</div>
+    <p>Subtotal: $<span class="subtotal">{{multiply this.product.price this.quantity}}</span></p>
+    <button onclick="removeProductFromCart('{{../cart._id}}', '{{this.product._id}}')">Eliminar</button>
+  </li>
+  {{/each}}
+</ul>
+<p>Total: $<span id="cartTotal">{{calculateTotal cart.products}}</span></p>
+<button onclick="clearCart('{{cart._id}}')">Vaciar Carrito</button>
+<button onclick="window.location.href='/products'">Atras</button>
 {{else}}
-  <p>El carrito está vacío</p>
+<p>El carrito está vacío</p>
 {{/if}}
 
-
-
+<script src="/js/cart.js"></script>
