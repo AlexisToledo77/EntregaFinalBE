@@ -1,9 +1,9 @@
 import mongoose from "mongoose"
 
-const cartSchema=new mongoose.Schema(
+const cartSchema = new mongoose.Schema(
     {
-        products:{
-            type:[
+        products: {
+            type: [
                 {
                     product: {
                         type: mongoose.Schema.Types.ObjectId, 
@@ -11,18 +11,25 @@ const cartSchema=new mongoose.Schema(
                     }, 
                     quantity: Number
                 }
-            ]
+            ],
+            default: []
         }
     },
     {
-        timestamps:true
+        timestamps: true
     }
 )
 
-cartSchema.pre("findOne", function(){
-    this.populate("products.product").lean()
-})
+cartSchema.pre("findOne", function(next) {
+    this.populate("products.product");
+    this.lean();
+    next();
+});
 
-export const cartsModel=mongoose.model(
-    "carts", cartSchema
-)
+cartSchema.pre("findOneAndUpdate", function(next) {
+    this.populate("products.product");
+    this.lean();
+    next();
+});
+
+export const cartsModel = mongoose.model("carts", cartSchema)

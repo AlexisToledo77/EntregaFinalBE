@@ -88,32 +88,33 @@ router.post("/:cid/product/:pid", async (req, res) => {
     }
 })
 
+router.put("/:cid/products/:pid", async (req, res) => {
+    const { cid, pid } = req.params;
+    const { quantity } = req.body;
 
-router.put('/:cid', async (req, res) => {
+    if (!cid || !pid || !quantity) {
+        return res.status(400).json({ error: "Faltan parámetros obligatorios" });
+    }
+
+    if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
+        return res.status(400).json({ message: "ID de carrito o producto inválido" });
+    }
+
+    const quantityNumber = Number(quantity);
+    if (isNaN(quantityNumber)) return res.status(400).json({ error: "La cantidad debe ser un número válido" });
+
     try {
-        let cart = await CartManager.updateCart(req.params.cid, req.body.products)
-        res.json({ status: 'success', payload: cart })
+        await CartManager.updateProductQuantity(cid, pid, quantityNumber);
+        res.status(200).json({ message: "Cantidad del producto actualizada correctamente" });
     } catch (error) {
-        res.status(500).json({ status: 'error', error: error.message })
+        console.error("Error al actualizar la cantidad del producto:", error);
+        res.status(500).json({
+            error: "Error en el servidor",
+            detalle: error.message,
+        });
     }
 });
 
-router.put('/:cid/product/:pid', async (req, res) => {
-    let { quantity } = req.body
-    quantity = Number(quantity)
-
-    if (Object.keys(req.body).length !== 1 || isNaN(quantity) || quantity <= 0) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: 'Solo se permite modificar la cantidad y debe ser un número positivo' })
-    }
-    try {
-        let cart = await CartManager.updateProductQuantity(req.params.cid, req.params.pid, quantity)
-        res.json({ status: 'success', payload: cart })
-    } catch (error) {
-        console.error(`Error updating product quantity: ${error.message}`)
-        res.status(500).json({ status: 'error', error: error.message })
-    }
-})
 
 router.delete('/:cid/product/:pid', async (req, res) => {
     let { cid, pid } = req.params

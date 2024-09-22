@@ -38,6 +38,15 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
 
+//depuracion
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  console.log('Body:', req.body);
+  console.log('Params:', req.params);
+  next();
+});
+
+
 app.use('/', viewsRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartRouter)

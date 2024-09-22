@@ -2,15 +2,19 @@ import { cartsModel } from "../models/cartModel.js"
 
 export class CartManager {
     static async getById(id) {
-        return await cartsModel.findOne({ _id: id })
+        return await cartsModel.findOne({ _id: id });
     }
 
     static async create() {
-        return await cartsModel.create({ products: [] })
+        return await cartsModel.create({ products: [] });
     }
 
     static async update(id, cart) {
-        return await cartsModel.updateOne({ _id: id }, cart)
+        return await cartsModel.findByIdAndUpdate(
+            id,
+            { $set: { products: cart.products } },
+            { new: true, runValidators: true }
+        ).lean();
     }
     static async getCart() {
         return await cartsModel.find().lean()
@@ -38,12 +42,27 @@ export class CartManager {
     }
 
     static async updateProductQuantity(cid, pid, quantity) {
-        return await cartsModel.findOneAndUpdate(
-            { _id: cid, 'products.product': pid },
-            { $set: { 'products.$.quantity': quantity } },
-            { new: true }
-        ).lean()
+        try {
+            if (quantity < 0) {
+                throw new Error("La cantidad no puede ser negativa.");
+            }
+            await Cart.updateOne(
+                { _id: cid, "products.product": pid },
+                { $set: { "products.$.quantity": quantity } }
+            );
+        } catch (error) {
+            console.error("Error al actualizar la cantidad del producto en el carrito:", error);
+            throw new Error("Error al actualizar la cantidad del producto en el carrito.");
+        }
     }
+
+    // static async updateProductQuantity(cid, pid, quantity) {
+    //     return await cartsModel.findOneAndUpdate(
+    //         { _id: cid, 'products.product': pid },
+    //         { $set: { 'products.$.quantity': quantity } },
+    //         { new: true }
+    //     ).lean();
+    // }
 
     static async clearCart(id) {
         return await cartsModel.findByIdAndDelete(id).lean()
