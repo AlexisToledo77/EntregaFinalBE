@@ -1,26 +1,50 @@
-<h1>Carrito</h1>
-{{#if cart.products.length}}
-  <ul id="cartList">
-    {{#each cart.products}}
-    <li data-product-id="{{this.product._id}}">
-      <h2>{{this.product.title}}</h2>
-      <p>Precio: ${{this.product.price}}</p>
-      <div class="quantity-control">
-        <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'decrease')">-</button>
-        <span class="quantity">{{this.quantity}}</span>
-        <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'increase')">+</button>
-      </div>
-      <p>Subtotal: $<span class="subtotal">{{multiply this.product.price this.quantity}}</span></p>
-      <button onclick="removeFromCart('{{../cart._id}}', '{{this.product._id}}')">Eliminar</button>
-    </li>
-    {{/each}}
-  </ul>
-  <p>Total: $<span id="cartTotal">{{calculateTotal cart.products}}</span></p>
-  <button onclick="clearCart('{{cart._id}}')">Vaciar Carrito</button>
-  <button onclick="window.location.href='/products'">Atras</button>
-{{else}}
-  <p>El carrito está vacío</p>
-{{/if}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito</title>
+</head>
+
+<body>
+    <nav class="header">
+        <ul>
+            <li>
+                <button class="btn" id="clean-cart">Limpiar carrito</button>
+            </li>
+            <li>
+                <button class="btn" id="back-home">Volver a los productos</button>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="cart-container" id="cart-container">
+        <h1>Carrito</h1>
+        {{#each products}}
+        <div class="cart-item">
+            <img src={{this.product.thumbnails}} alt="Producto 1" class="product-image">
+            <div class="product-details">
+                <h3>{{this.product.title}}</h3>
+                <p>{{this.product.price}}</p>
+                <div class="quantity-controls">
+                    <button class="btn-decrease" id="btn-decrease" data-id={{this.product._id}}>-</button>
+                    <span class="quantity" id="input-quantity">{{this.quantity}}</span>
+                    <button class="btn-increase" id="btn-increase" data-id={{this.product._id}}>+</button>
+                </div>
+            </div>
+            <button id="remove-item" class="remove-item" data-id={{this.product._id}}>Eliminar</button>
+        </div>
+        {{/each}}
+
+        <div class="total">
+            <h2>Total: $<span id="cart-price">0</span></h2>
+        </div>
+    </main>
+</body>
+
+</html>
+<script src="/js/cart.js"></script>
 
 
 

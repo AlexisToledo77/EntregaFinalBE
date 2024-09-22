@@ -1,4 +1,39 @@
-<h1>Lista de Productos</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos</title>
+</head>
+
+<body>
+
+ <nav class="header">
+    <ul class="nav-list">
+        <li class="nav-item cart-info">
+            <span class="cart-icon">🛒</span>
+            <a href="/cart" class="btn btn-cart" id="cart-view">Ver carrito</a>
+            <span class="cart-count">{{numCarts}}</span>
+        </li>
+    </ul>
+</nav>
+
+  <h1> Productos </h1>
+
+  <div class="container" id="container-home"></div>
+  <div class="pagination-container">
+    <button class="btn btn-primary" id="btn-prev">Anterior</button>
+    <span>Página <span id="current-page">{{page}}</span> de {{totalPages}}</span>
+    <button class="btn btn-primary" id="btn-next">Siguiente</button>
+  </div>
+</body>
+
+</html>
+<script src="/js/home.js"></script>
+<script src="/js/cart.js"></script>
+
+{{!-- <h1>Lista de Productos</h1>
 <ul>
     {{#each products}}
     <li>{{this.title}} - ${{this.price}}</li>
@@ -8,4 +43,4 @@
     <button onclick="window.location.href='/realTimeProducts'">Agregar Productos</button>
     <button onclick="window.location.href='/verUsuarios'">Ver Usuarios</button>
     <button onclick="window.location.href='/carts'">Ver Carrito</button>
-</ul>
+</ul> --}}

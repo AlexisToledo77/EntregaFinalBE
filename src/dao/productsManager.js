@@ -30,7 +30,7 @@ export class ProductsManager {
 
     static async paginate(filter, options) {
         try {
-            return await ProductModel.paginate(filter, options)
+            return await ProductModel.paginate(filter = {}, options)
         } catch (error) {
             console.log(error);
             throw new Error('Error al paginar productos')

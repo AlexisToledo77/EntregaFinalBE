@@ -1,56 +1,65 @@
-<h1>Productos en Tiempo Real</h1>
-<div id="productList"></div>
-{{#each products}}
-    <li>{{this.title}} - ${{this.price}}</li>
-    {{/each}}
-<h2>Agregar Nuevo Producto</h2>
-<form id="addProductForm">
-    <input type="text" id="title" placeholder="Título" required>
-    <input type="text" id="description" placeholder="Descripción" required>
-    <input type="text" id="code" placeholder="Código" required>
-    <input type="number" id="price" placeholder="Precio" required>
-    <input type="number" id="stock" placeholder="Stock" required>
-    <input type="text" id="category" placeholder="Categoría" required>
-    <button type="submit">Agregar Producto</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
 
-<script src="/socket.io/socket.io.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos en Tiempo Real</title>
+</head>
 
-<button onclick="window.location.href='/'">Volver a Home</button>
-
-<script>
-const socket = io();
-
-socket.on('updateProducts', (products) => {
-    const productList = document.getElementById('productList');
-    productList.innerHTML = products.map(product => `
-        <div>
-            <h3>${product.title}</h3>
-            <p>Precio: $${product.price}</p>
-            <p>Stock: ${product.stock}</p>
-            <button onclick="deleteProduct('${product._id}')">Eliminar</button>
+<body>
+    <main>
+        <h1>Productos en Tiempo Real</h1>
+        <div class="form-container">
+            <h2>Agregar stock</h2>
+            <form id="products-form" enctype="multipart/form-data">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="title" required>
+                <label for="code">Code</label>
+                <input type="text" id="code" name="code" required>
+                <label for="description">Description</label>
+                <input type="text" id="description" name="description" required>
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" required>
+                <label for="stock">Stock</label>
+                <input type="number" id="stock" name="stock" required>
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" required>
+                <label for="thumbnail">Imagenes</label>
+                <input type="file" id="thumbnails" name="thumbnails" accept="image/*" multiple>
+                <button type="submit">Agregar</button>
+            </form>
         </div>
-    `).join('');
-});
 
-document.getElementById('addProductForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const product = {
-        title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
-        code: document.getElementById('code').value,
-        price: parseFloat(document.getElementById('price').value),
-        stock: parseInt(document.getElementById('stock').value),
-        category: document.getElementById('category').value
-    };
-    socket.emit('addProduct', product);
-    e.target.reset();
-});
+        <div id="container-products" class="container">
+            {{#each products}}
+            <div class="card-product">
+                <header class="card-header">
+                    <div class="img-container">
+                        {{#each thumbnails}}
+                        <img src={{this}} alt={{this.title}}>
+                        {{/each}}
+                    </div>
+                </header>
+                <div class="card-content">
+                    <h3 class="title-product">{{this.title}}</h3>
+                    <p class="description-product">{{this.description}}</p>
+                    <p class="price-product">${{this.price}}</p>
+                </div>
+                <footer class="card-footer">
+                    <button id="btn-delete" class="btn-delete" data-id={{this._id}}>Eliminar</button>
+                </footer>
+            </div>
+            {{/each}}
+        </div>
 
-function deleteProduct(id) {
-    socket.emit('deleteProduct', id);
-}
+    </main>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/realTimeProducts.js"></script>
+</body>
 
 
-socket.emit('requestInitialProducts');
-</script>
+
+
+</html>
