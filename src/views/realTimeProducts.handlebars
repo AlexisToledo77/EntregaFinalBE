@@ -1,6 +1,8 @@
 <h1>Productos en Tiempo Real</h1>
 <div id="productList"></div>
-
+{{#each products}}
+    <li>{{this.title}} - ${{this.price}}</li>
+    {{/each}}
 <h2>Agregar Nuevo Producto</h2>
 <form id="addProductForm">
     <input type="text" id="title" placeholder="Título" required>
@@ -15,6 +17,7 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <button onclick="window.location.href='/'">Volver a Home</button>
+
 <script>
 const socket = io();
 
@@ -47,6 +50,7 @@ document.getElementById('addProductForm').addEventListener('submit', (e) => {
 function deleteProduct(id) {
     socket.emit('deleteProduct', id);
 }
+
 
 socket.emit('requestInitialProducts');
 </script>

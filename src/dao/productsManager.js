@@ -1,6 +1,9 @@
 import { ProductModel } from "../models/productModel.js"
 
 export class ProductsManager {
+  static async get(page, limit){
+    return await ProductModel.paginate({},{lean:true, page, limit})
+  } 
 
     static async getProducts() {
       return await ProductModel.find().lean()

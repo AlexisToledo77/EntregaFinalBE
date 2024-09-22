@@ -13,6 +13,7 @@ import { connDB} from "./connDB.js"
 import exphbs from 'express-handlebars'
 import { registerHelpers } from './hbs-helpers.js'
 
+
 const PORT =config.PORT
 
 const __filename = fileURLToPath(import.meta.url)
@@ -39,11 +40,46 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', viewsRouter)
-app.use('/api/products', productsRouter)
-app.use('/api/carts', cartRouter)
+app.use('/api/products', 
+  (req, res, next)=>{
+    req.io=io
+    next()
+  },  
+  productsRouter
+)
+app.use('/api/carts', 
+  (req, res, next)=>{
+    req.io=io
+    next()
+  },  
+  cartRouter
+)
 app.use('/api/users', usersRouter)
 
 connDB()
+
+// io.on("connection", socket => {
+//   socket.on("message", message => {
+//       console.log(message);
+//   })
+// })
+
+io.on('connection', (socket) => {
+  console.log('Nuevo cliente conectado');
+
+    socket.on('addProduct', async (product) => {
+        await productManager.addProduct(product);
+        io.emit('updateProducts', await productManager.getProducts());
+    });
+
+    socket.on('deleteProduct', async (id) => {
+        await productManager.deleteProduct(id);
+        io.emit('updateProducts', await productManager.getProducts());
+    });
+});
+
+export { io };
+
 
 
 

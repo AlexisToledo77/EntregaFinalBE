@@ -5,6 +5,8 @@ import { CartManager } from '../dao/cartsManager.js'
 import { ProductsManager } from '../dao/productsManager.js'
 
 const router = express.Router()
+//esta es nueva para correccion
+// router.get('/', getCart);
 
 router.get('/', async (req, res) => {
     try {
@@ -13,9 +15,11 @@ router.get('/', async (req, res) => {
         return res.status(200).json({ carts })
     } catch (error) {
         console.log(error)
-        res.status(500).json({ message: 'Error al obtener usuarios' })
+        res.status(500).json({ message: 'Error al obtener los carritos' })
     }
 })
+
+
 
 
 router.get('/:id', async (req, res) => {
@@ -46,7 +50,8 @@ router.post("/", async (req, res) => {
 })
 
 router.post("/:cid/product/:pid", async (req, res) => {
-    let { pid, cid } = req.params
+    let cid = "66e8ffe277186cd85d69378d"
+    let { pid } = req.params
     if (!isValidObjectId(pid) || !isValidObjectId(cid)) {
         res.setHeader('Content-Type', 'application/json');
         return res.status(400).json({ error: `Algún id tiene formato inválido. Verifique...!!!` })
@@ -93,6 +98,7 @@ router.put('/:cid', async (req, res) => {
     try {
         let cart = await CartManager.updateCart(req.params.cid, req.body.products)
         res.json({ status: 'success', payload: cart })
+        io.emit('updateCart', cart)
     } catch (error) {
         res.status(500).json({ status: 'error', error: error.message })
     }

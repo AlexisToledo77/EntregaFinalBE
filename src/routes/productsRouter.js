@@ -18,7 +18,7 @@ const router = express.Router()
             options.sort = { price: sort === 'asc' ? 1 : -1 }
         }
 
-        const filter = {}
+        let filter = {}
         if (query) {
             filter.$or = [
                 { category: { $regex: query, $options: 'i' } },
@@ -26,7 +26,7 @@ const router = express.Router()
             ];
         }
 
-        let result = await ProductsManager.paginate(filter, options)
+        let result = await ProductsManager.paginate(page, limit)
 
         let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
 
@@ -101,6 +101,9 @@ router.get('/:id',async(req,res)=>{
         }        
 
         let newProduct=await ProductsManager.createProducts({title, description, ...otros})
+        
+        req.io.emit("newProduct", newProduct)
+
         res.setHeader('Content-Type','application/json')
         return res.status(201).json({newProduct})
     } catch (error) {

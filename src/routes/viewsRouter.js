@@ -10,8 +10,9 @@ router.get('/', async (req, res) => {
   res.render('home', { products })
 })
 
-router.get('/realtimeproducts', (req, res) => {
-  res.render('realTimeProducts')
+router.get('/realtimeproducts', async (req, res) => {
+  let products = await ProductsManager.getProducts()
+  res.render('realTimeProducts', { products })
 })
 
 router.get('/verUsuarios', async (req, res) => {
@@ -20,8 +21,9 @@ router.get('/verUsuarios', async (req, res) => {
 })
 
 router.get('/carts', async (req, res) => {
-  let carts = await CartManager.getCart()
-  res.render('cart', { carts })
+  const cid = "66e8ffe277186cd85d69378d";
+  let cart = await CartManager.getCartById(cid)
+  res.render('cart', { cart })
 })
 
 router.get('/carts/:cid', async (req, res) => {

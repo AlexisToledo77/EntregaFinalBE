@@ -24,5 +24,6 @@ cartSchema.pre("findOne", function(){
 })
 
 export const cartsModel=mongoose.model(
-    "carts", cartSchema
+    "carts", 
+    cartSchema
 )
