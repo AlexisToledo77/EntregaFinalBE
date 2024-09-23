@@ -30,12 +30,16 @@ export class ProductsManager {
     }
 
     static async paginate(filter, options) {
-        try {
-            return await ProductModel.paginate(filter, options)
-        } catch (error) {
-            console.log(error);
-            throw new Error('Error al paginar productos')
-        }
+      try {
+        console.log('Filter:', filter);
+        console.log('Options:', options);
+        const result = await ProductModel.paginate(filter, options);
+        console.log('Pagination result:', result);
+        return result;
+      } catch (error) {
+        console.error('Error en la paginación:', error);
+        throw error;
+      }
     }
   }
   export const productsManager = new ProductsManager

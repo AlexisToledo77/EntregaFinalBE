@@ -4,8 +4,7 @@ import { isValidObjectId } from 'mongoose'
 
 const router = express.Router()
 
-
-  router.get('/', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         let { limit = 10, page = 1, sort, query } = req.query
         let options = {
@@ -30,31 +29,77 @@ const router = express.Router()
 
         let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
 
-        let response = {
-            status: 'success',
-            payload: result.docs,
-            totalPages: result.totalPages,
-            prevPage: result.prevPage,
-            nextPage: result.nextPage,
+        // Renderizar la vista en lugar de devolver JSON
+        res.render('products', {
+            products: result.docs,
             page: result.page,
+            totalPages: result.totalPages,
             hasPrevPage: result.hasPrevPage,
             hasNextPage: result.hasNextPage,
+            prevPage: result.hasPrevPage ? result.prevPage : null,
+            nextPage: result.hasNextPage ? result.nextPage : null,
             prevLink: result.hasPrevPage ? `${baseUrl}?limit=${limit}&page=${result.prevPage}&sort=${sort}&query=${query}` : null,
             nextLink: result.hasNextPage ? `${baseUrl}?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}` : null
-        }
-
-        res.setHeader('Content-Type', 'application/json')
-        return res.status(200).json(response)
+        });
     } catch (error) {
         console.log(error)
-        res.setHeader('Content-Type', 'application/json')
-        return res.status(500).json({
-            status: 'error',
+        res.status(500).render('error', {
             error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
             detalle: error.message
-        })
+        });
     }
 })
+
+//   router.get('/', async (req, res) => {
+//     try {
+//         let { limit = 10, page = 1, sort, query } = req.query
+//         let options = {
+//             limit: parseInt(limit),
+//             page: parseInt(page),
+//             lean: true
+//         };
+
+//         if (sort) {
+//             options.sort = { price: sort === 'asc' ? 1 : -1 }
+//         }
+
+//         const filter = {}
+//         if (query) {
+//             filter.$or = [
+//                 { category: { $regex: query, $options: 'i' } },
+//                 { status: query.toLowerCase() === 'true' }
+//             ];
+//         }
+
+//         let result = await ProductsManager.paginate(filter, options)
+
+//         let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
+
+//         let response = {
+//             status: 'success',
+//             payload: result.docs,
+//             totalPages: result.totalPages,
+//             prevPage: result.prevPage,
+//             nextPage: result.nextPage,
+//             page: result.page,
+//             hasPrevPage: result.hasPrevPage,
+//             hasNextPage: result.hasNextPage,
+//             prevLink: result.hasPrevPage ? `${baseUrl}?limit=${limit}&page=${result.prevPage}&sort=${sort}&query=${query}` : null,
+//             nextLink: result.hasNextPage ? `${baseUrl}?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}` : null
+//         }
+
+//         res.setHeader('Content-Type', 'application/json')
+//         return res.status(200).json(response)
+//     } catch (error) {
+//         console.log(error)
+//         res.setHeader('Content-Type', 'application/json')
+//         return res.status(500).json({
+//             status: 'error',
+//             error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
+//             detalle: error.message
+//         })
+//     }
+// })
 
 
 router.get('/:id',async(req,res)=>{
