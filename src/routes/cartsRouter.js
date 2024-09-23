@@ -59,7 +59,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
             return res.status(400).json({ error: `No existe cart con id ${cid}` })
         }
 
-        let product = await ProductsManager.getBy({ id: pid })
+        let product = await ProductsManager.getBy({ _id: pid })
         if (!product) {
             res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: `No existe product con id ${pid}` })

@@ -2,19 +2,17 @@
 {{#if cart.products.length}}
   <ul id="cartList">
     {{#each cart.products}}
-      {{#if this.product}}
-        <li data-product-id="{{this.product._id}}">
-          <h2>{{this.product.title}}</h2>
-          <p>Precio: ${{this.product.price}}</p>
-          <div class="quantity-control">
-            <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'decrease')">-</button>
-            <span class="quantity">{{this.quantity}}</span>
-            <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'increase')">+</button>
-          </div>
-          <p>Subtotal: $<span class="subtotal">{{#if this.product}}{{multiply this.product.price this.quantity}}{{else}}0{{/if}}</span></p>
-          <button onclick="removeProductFromCart('66f0e892bb01b7aa10d33ade','{{this.product._id}}')">Eliminar</button>
-        </li>
-      {{/if}}
+    <li data-product-id="{{this.product._id}}">
+      <h2>{{this.product.title}}</h2>
+      <p>Precio: ${{this.product.price}}</p>
+      <div class="quantity-control">
+        <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'decrease')">-</button>
+        <span class="quantity">{{this.quantity}}</span>
+        <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'increase')">+</button>
+      </div>
+      <p>Subtotal: $<span class="subtotal">{{multiply this.product.price this.quantity}}</span></p>
+      <button onclick="removeProductFromCart('66f0e892bb01b7aa10d33ade','{{this.product._id}}')">Eliminar</button>
+    </li>
     {{/each}}
   </ul>
   <p>Total: $<span id="cartTotal">{{calculateTotal cart.products}}</span></p>

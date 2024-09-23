@@ -29,6 +29,7 @@ router.get('/', async (req, res) => {
 
         let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
 
+        
         res.render('products', {
             products: result.docs,
             page: result.page,
