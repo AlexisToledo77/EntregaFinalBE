@@ -28,7 +28,7 @@
   <tbody>
   {{#each products}}
     <tr>
-      <td><button class="btn btn-danger" onclick='deleteProduct("{{this.id}}")'>Eliminar</button></td> 
+      <td><button class="btn btn-danger" onclick="deleteProduct('{{this._id}}')">Eliminar</button></td> 
       <td>{{this.title}}</td>
       <td>{{this.description}}</td>
       <td>{{this.price}}</td>

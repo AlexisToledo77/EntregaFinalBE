@@ -5,7 +5,7 @@ const removeItem = document.getElementById("remove-item");
 const cartContainer = document.getElementById("cart-container"); 
 
 const cart = {
-    _id: '66e8ffe277186cd85d69378d',
+    _id: '66f0e892bb01b7aa10d33ade',
     products: []
   };
 
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // eliminar producto del carrito
+    // Función para eliminar producto del carrito
     window.removeProductFromCart = function(cartId, productId) {
         fetch(`/api/carts/${cartId}/products/${productId}`, {
             method: 'DELETE'

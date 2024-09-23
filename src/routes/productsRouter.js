@@ -29,7 +29,6 @@ router.get('/', async (req, res) => {
 
         let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
 
-        // Renderizar la vista en lugar de devolver JSON
         res.render('products', {
             products: result.docs,
             page: result.page,
@@ -178,7 +177,7 @@ router.delete("/:id", async(req, res)=>{
     }
 
     try {
-        let productEliminado=await ProductsManager.delete(id)  
+        let productEliminado=await ProductsManager.deleteProducts(id)  
         res.setHeader('Content-Type','application/json')
         return res.status(200).json({productEliminado})    
     } catch (error) {
