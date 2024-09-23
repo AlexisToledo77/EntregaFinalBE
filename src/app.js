@@ -19,11 +19,15 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
-const server = createServer(app)
-const io = new Server(server)
 
 const httpServer = app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`)
+})
+const io = new Server(httpServer)
+
+app.use((req, res, next) => {
+  req.io = io
+  next()
 })
 
 const hbs = exphbs.create({})
@@ -38,19 +42,17 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
 
-//depuracion
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  console.log('Body:', req.body);
-  console.log('Params:', req.params);
-  next();
-});
-
-
 app.use('/', viewsRouter)
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartRouter)
 app.use('/api/users', usersRouter)
+
+io.on('connection', socket => {
+  console.log("New client connected");
+  socket.on('productList', data => {
+    io.emit('updateProducts', data.payload)
+  })
+})
 
 connDB()
 

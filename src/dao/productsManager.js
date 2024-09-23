@@ -10,6 +10,10 @@ export class ProductsManager {
       return await ProductModel.findOne(filtro).lean()
     }
 
+    static async getProductsById(pid) {
+      return await ProductModel.findById(pid).lean()
+    }
+
     static async getBy(filtro={}){
       return await ProductModel.findOne(filtro).lean()
   }
@@ -35,4 +39,3 @@ export class ProductsManager {
     }
   }
   export const productsManager = new ProductsManager
-

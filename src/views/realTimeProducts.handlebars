@@ -2,51 +2,42 @@
 <div id="productList"></div>
 
 <h2>Agregar Nuevo Producto</h2>
-<form id="addProductForm">
-    <input type="text" id="title" placeholder="Título" required>
-    <input type="text" id="description" placeholder="Descripción" required>
-    <input type="text" id="code" placeholder="Código" required>
-    <input type="number" id="price" placeholder="Precio" required>
-    <input type="number" id="stock" placeholder="Stock" required>
-    <input type="text" id="category" placeholder="Categoría" required>
-    <button type="submit">Agregar Producto</button>
+<hr />
+<form id="createForm">
+  <div class="m-2">Title:<input type="text" id="title"></div>
+  <div class="m-2">Description:<input type="text" id="description"></div>
+  <div class="m-2">Code:<input type="text" id="code"></div>
+  <div class="m-2">Price:<input type="text" id="price"></div>
+  <div class="m-2">Stock:<input type="text" id="stock"></div>
+  <div class="m-2">Categoria:<input type="text" id="category"></div>
+
 </form>
+<button id="createBtn" class="btn btn-primary">Create Product</button>
+<hr />
+
+
+<table id="productsTable" class="table table-striped">
+  <thead>
+    <td></td>
+    <td><strong>Producto</strong></td>
+    <td><strong>Descripción</strong></td>
+    <td><strong>Precio</strong></td>
+    <td><strong>Código</strong></td>
+    <td><strong>Stock</strong></td>
+  </thead>
+  <tbody>
+  {{#each products}}
+    <tr>
+      <td><button class="btn btn-danger" onclick='deleteProduct("{{this.id}}")'>Eliminar</button></td> 
+      <td>{{this.title}}</td>
+      <td>{{this.description}}</td>
+      <td>{{this.price}}</td>
+      <td>{{this.code}}</td>
+      <td>{{this.stock}}</td>
+    </tr>
+  {{/each}}
+  </tbody>
+</table>
 
 <script src="/socket.io/socket.io.js"></script>
-
-<button onclick="window.location.href='/'">Volver a Home</button>
-<script>
-const socket = io();
-
-socket.on('updateProducts', (products) => {
-    const productList = document.getElementById('productList');
-    productList.innerHTML = products.map(product => `
-        <div>
-            <h3>${product.title}</h3>
-            <p>Precio: $${product.price}</p>
-            <p>Stock: ${product.stock}</p>
-            <button onclick="deleteProduct('${product._id}')">Eliminar</button>
-        </div>
-    `).join('');
-});
-
-document.getElementById('addProductForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const product = {
-        title: document.getElementById('title').value,
-        description: document.getElementById('description').value,
-        code: document.getElementById('code').value,
-        price: parseFloat(document.getElementById('price').value),
-        stock: parseInt(document.getElementById('stock').value),
-        category: document.getElementById('category').value
-    };
-    socket.emit('addProduct', product);
-    e.target.reset();
-});
-
-function deleteProduct(id) {
-    socket.emit('deleteProduct', id);
-}
-
-socket.emit('requestInitialProducts');
-</script>
+<script src="/js/realTimeProducts.js"></script>

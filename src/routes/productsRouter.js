@@ -59,14 +59,16 @@ const router = express.Router()
 
 router.get('/:id',async(req,res)=>{
 
-    let {id}=req.params
-    if(!isValidObjectId(id)){
+    let pid = req.params.id
+    
+    
+    if(!isValidObjectId(pid)){
         res.setHeader('Content-Type','application/json')
         return res.status(400).json({error:`id formato inválido`}) 
     }
-  
+    
     try {
-        let products=await ProductsManager.getProductsBy({_id:id})
+        let products=await ProductsManager.getProductsBy({_id:pid})
         if(!products){
             res.setHeader('Content-Type','application/json')
             return res.status(400).json({error:`No existen usuarios con id ${id}`})
@@ -85,35 +87,14 @@ router.get('/:id',async(req,res)=>{
     }
 })
 
-  router.post("/", async(req, res)=>{
-    let {title, description, ...otros}=req.body
-    if(!title){
-        res.setHeader('Content-Type','application/json')
-        return res.status(400).json({error:`Complete nombre del producto`})
-    }
 
-    try {
-        let products=await ProductsManager.getProducts()
-        let existe=products.find(p=>p.title===title)
-        if(existe){
-            res.setHeader('Content-Type','application/json');
-            return res.status(400).json({error:`Ya existe ${title} en la BD`})
-        }        
-
-        let newProduct=await ProductsManager.createProducts({title, description, ...otros})
-        res.setHeader('Content-Type','application/json')
-        return res.status(201).json({newProduct})
-    } catch (error) {
-        console.log(error)
-        res.setHeader('Content-Type','application/json')
-        return res.status(500).json(
-            {
-                error:`Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                detalle:`${error.message}`
-            }
-        )
-    }
-})
+router.post("/", async (req, res) => {
+    const newProduct = req.body
+    const result = await ProductsManager.createProducts(newProduct)
+    const products = await ProductsManager.getProducts()
+    req.io.emit('updateProducts', products.payload) 
+    res.json(result)
+  })
 
 router.put("/:id", async(req, res)=>{
     let{id}=req.params

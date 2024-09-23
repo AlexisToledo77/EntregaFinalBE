@@ -7,3 +7,22 @@
 
 <button onclick="window.location.href='/products'">Atras</button>
 <button onclick="addToCart('{{product._id}}')">Agregar al carrito</button>
+
+<script>
+function addToCart(productId) {
+        fetch(`/api/carts/66e8ffe277186cd85d69378d/product/${productId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ quantity: 1 }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Producto agregado al carrito')
+    })
+    .catch((error) => {
+        console.error('Error:', error)
+    });
+}
+</script>

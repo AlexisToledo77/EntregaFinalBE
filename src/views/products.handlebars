@@ -28,7 +28,7 @@
 
 <script>
 function addToCart(productId) {
-    fetch(`/carts/{{session.cartId}}/product/${productId}`, {
+        fetch(`/api/carts/66f0e892bb01b7aa10d33ade/product/${productId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

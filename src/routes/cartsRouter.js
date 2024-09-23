@@ -29,7 +29,7 @@ router.get('/:id', async (req, res) => {
     try {
         let cart = await CartManager.getById(id)
         res.setHeader('Content-Type', 'application/json')
-        res.status(200).json({ cart })
+        res.status(200).json({ status: 'success', payload: cart })
     } catch (error) {
         return procesaErrores(res, error)
     }
@@ -88,33 +88,32 @@ router.post("/:cid/product/:pid", async (req, res) => {
     }
 })
 
-router.put("/:cid/products/:pid", async (req, res) => {
-    const { cid, pid } = req.params;
-    const { quantity } = req.body;
 
-    if (!cid || !pid || !quantity) {
-        return res.status(400).json({ error: "Faltan parámetros obligatorios" });
-    }
-
-    if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
-        return res.status(400).json({ message: "ID de carrito o producto inválido" });
-    }
-
-    const quantityNumber = Number(quantity);
-    if (isNaN(quantityNumber)) return res.status(400).json({ error: "La cantidad debe ser un número válido" });
-
+router.put('/:cid', async (req, res) => {
     try {
-        await CartManager.updateProductQuantity(cid, pid, quantityNumber);
-        res.status(200).json({ message: "Cantidad del producto actualizada correctamente" });
+        let cart = await CartManager.updateCart(req.params.cid, req.body.products)
+        res.json({ status: 'success', payload: cart })
     } catch (error) {
-        console.error("Error al actualizar la cantidad del producto:", error);
-        res.status(500).json({
-            error: "Error en el servidor",
-            detalle: error.message,
-        });
+        res.status(500).json({ status: 'error', error: error.message })
     }
 });
 
+router.put('/:cid/product/:pid', async (req, res) => {
+    let { quantity } = req.body
+    quantity = Number(quantity)
+
+    if (Object.keys(req.body).length !== 1 || isNaN(quantity) || quantity <= 0) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: 'Solo se permite modificar la cantidad y debe ser un número positivo' })
+    }
+    try {
+        let cart = await CartManager.updateProductQuantity(req.params.cid, req.params.pid, quantity)
+        res.json({ status: 'success', payload: cart })
+    } catch (error) {
+        console.error(`Error updating product quantity: ${error.message}`)
+        res.status(500).json({ status: 'error', error: error.message })
+    }
+})
 
 router.delete('/:cid/product/:pid', async (req, res) => {
     let { cid, pid } = req.params
@@ -124,7 +123,8 @@ router.delete('/:cid/product/:pid', async (req, res) => {
     }
     try {
         let cart = await CartManager.removeProductFromCart(req.params.cid, req.params.pid)
-        res.json({ status: 'Se elimino el producto', payload: cart });
+        
+        res.json({ status: 'Se elimino el producto', cart });
     } catch (error) {
         res.status(500).json({ status: 'error', error: error.message })
     }

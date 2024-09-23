@@ -10,8 +10,12 @@ router.get('/', async (req, res) => {
   res.render('home', { products })
 })
 
-router.get('/realtimeproducts', (req, res) => {
-  res.render('realTimeProducts')
+router.get("/realtimeproducts", async(req, res) => {
+  let allProducts = await ProductsManager.getProducts()
+  res.render("realTimeProducts", {
+    title: "Productos RealTime",
+    products: allProducts
+  })
 })
 
 router.get('/verUsuarios', async (req, res) => {
@@ -20,11 +24,9 @@ router.get('/verUsuarios', async (req, res) => {
 })
 
 router.get('/carts', async (req, res) => {
-  const cid = "66e8ffe277186cd85d69378d";
-  let cart = await CartManager.getCartById(cid)
-  res.render('cart', { cart })
+  let carts = await CartManager.getCart()
+  res.render('cart', { carts })
 })
-
 
 router.get('/carts/:cid', async (req, res) => {
 try {
@@ -47,8 +49,8 @@ router.get('/products', async (req, res) => {
 
 router.get("/products/:pid", async (req, res) => {
   try {
-      let pid = req.params.cid
-      let product = await ProductsManager.getProductsBy(pid)
+      let pid = req.params.pid
+      let product = await ProductsManager.getProductsById(pid)
       if (product) {
           res.render("productDetail", { product })
       } else {
