@@ -120,8 +120,10 @@ router.delete('/:cid/product/:pid', async (req, res) => {
     if (!isValidObjectId(cid) || !isValidObjectId(pid)) {
         res.setHeader('Content-Type', 'application/json')
         return res.status(400).json({ error: 'Ingrese un id válido de MongoDB' })
+        
     }
     try {
+        
         let cart = await CartManager.removeProductFromCart(req.params.cid, req.params.pid)
         
         res.json({ status: 'Se elimino el producto', cart });

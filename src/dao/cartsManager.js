@@ -45,17 +45,30 @@ export class CartManager {
         ).lean()
     }
 
-    static async clearCart(id) {
-        return await cartsModel.findByIdAndDelete(id).lean()
+    static async clearCart(cid) {
+        return await cartsModel.findByIdAndDelete(cid).lean()
     }
 
     static async removeProductFromCart(cid, pid) {
-        return await cartsModel.findByIdAndUpdate(
-            { _id:cid},
-            { $pull: { products: { _id : pid } } },
-            { new: true }
-        ).lean()
-    }
+        try {
+          const updatedCart = await cartsModel.findByIdAndUpdate(
+            cid, 
+            { $pull: { products: { product: pid } } }, 
+            { new: true } 
+          ).lean();
+      
+          if (!updatedCart) {
+            throw new Error('Carrito no encontrado o producto no existe en el carrito');
+          }
+      
+          return updatedCart;
+        } catch (error) {
+          console.error('Error eliminando el producto del carrito:', error);
+          throw error;
+        }
+      }
+      
+
 
     static async paginate(filter, options) {
         try {
@@ -66,25 +79,25 @@ export class CartManager {
         }
     }
 
-    static async addProductInCart({ _id: cartId }) {
-        let cart = await this.getCartById(cartId)
-        if (!cart) {
+    // static async addProductInCart({ _id: cartId }) {
+    //     let cart = await this.getCartById(cartId)
+    //     if (!cart) {
 
-            let newCart = await this.addCart({ products: [{ product: obj.product, quantity: obj.quantity }] })
-            return newCart;
-        }
+    //         let newCart = await this.addCart({ products: [{ product: obj.product, quantity: obj.quantity }] })
+    //         return newCart;
+    //     }
 
-        let productIndex = cart.products.findIndex(item => item.product.toString() === obj.product)
+    //     let productIndex = cart.products.findIndex(item => item.product.toString() === obj.product)
 
-        if (productIndex !== -1) {
-            cart.products[productIndex].quantity += obj.quantity
-        } else {
-            cart.products.push({ product: obj.product, quantity: obj.quantity })
-        }
+    //     if (productIndex !== -1) {
+    //         cart.products[productIndex].quantity += obj.quantity
+    //     } else {
+    //         cart.products.push({ product: obj.product, quantity: obj.quantity })
+    //     }
 
-        let result = await cartsModel.updateOne({ _id: cid }, { products: cart.products })
-        return result
-    }
+    //     let result = await cartsModel.updateOne({ _id: cid }, { products: cart.products })
+    //     return result
+    // }
 
 }
 

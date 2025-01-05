@@ -13,6 +13,9 @@ import { connDB} from "./connDB.js"
 import exphbs from 'express-handlebars'
 import { registerHelpers } from './hbs-helpers.js'
 
+//Nuevo Codigo
+import sessions from 'express-session'
+
 const PORT =config.PORT
 
 const __filename = fileURLToPath(import.meta.url)
@@ -41,6 +44,13 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
+
+//Nuevo Codigo
+app.use(sessions({
+  secret: "123",
+  resave:true,
+  saveUninitialized:true
+}))
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

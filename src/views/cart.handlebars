@@ -11,7 +11,7 @@
         <button onclick="updateQuantity('{{../cart._id}}', '{{this.product._id}}', {{this.quantity}}, 'increase')">+</button>
       </div>
       <p>Subtotal: $<span class="subtotal">{{multiply this.product.price this.quantity}}</span></p>
-      <button onclick="removeProductFromCart('66f0e892bb01b7aa10d33ade','{{this.product._id}}')">Eliminar</button>
+      <button onclick="removeProductFromCart('{{../cart._id}}','{{this.product._id}}')">Eliminar</button>
     </li>
     {{/each}}
   </ul>

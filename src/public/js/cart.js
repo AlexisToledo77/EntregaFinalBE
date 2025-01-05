@@ -5,7 +5,7 @@ const removeItem = document.getElementById("remove-item");
 const cartContainer = document.getElementById("cart-container"); 
 
 const cart = {
-    _id: '66e8ffe277186cd85d69378d',
+    _id: '675cba1c2b327a05ddfef4ea',
     products: []
   };
 
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         console.log(`Actualizando producto: ${productId} en carrito: ${cartId}`);
     
-        fetch(`/api/cart/${cartId}/products/${productId}`, {
+        fetch(`/api/carts/${cartId}/product/${productId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ quantity: newQuantity })
@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const productElement = document.querySelector(`[data-product-id="${productId}"]`);
                 productElement.querySelector('.quantity').textContent = newQuantity;
                 updateSubtotalAndTotal();
+                window.location.reload()
             } else {
                 console.error('Error al actualizar la cantidad:', data.error);
             }
@@ -49,8 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // eliminar producto del carrito
     window.removeProductFromCart = function(cartId, productId) {
-        fetch(`/api/carts/${cartId}/products/${productId}`, {
-            method: 'DELETE'
+        fetch(`/api/carts/${cartId}/product/${productId}`, {
+            method: 'DELETE',
+        
         })
         .then(response => response.json())
         .then(data => {
@@ -63,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // vaciar el carrito
     window.clearCart = function(cartId) {
-        fetch(`/api/cart/${cartId}`, {
+        fetch(`/api/carts/${cartId}`, {
             method: 'DELETE'
         })
         .then(response => response.json())
