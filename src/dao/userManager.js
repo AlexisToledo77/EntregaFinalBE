@@ -9,6 +9,10 @@ export class UserManager {
     return await UserModel.findOne(filtro).lean()
   }
 
+  static async getBy(filtro = {}) {
+    return await UserModel.findOne(filtro).lean()
+  }
+
   static async createUser(user) {
     return await UserModel.create(user)
   }

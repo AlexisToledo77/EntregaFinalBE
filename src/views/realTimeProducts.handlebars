@@ -26,16 +26,16 @@
     <td><strong>Stock</strong></td>
   </thead>
   <tbody>
-  {{#each products}}
+    {{#each products}}
     <tr>
-      <td><button class="btn btn-danger" onclick='deleteProduct("{{this._id}}")'>Eliminar</button></td> 
+      <td><button class="btn btn-danger" onclick='deleteProduct("{{this._id}}")'>Eliminar</button></td>
       <td>{{this.title}}</td>
       <td>{{this.description}}</td>
       <td>{{this.price}}</td>
       <td>{{this.code}}</td>
       <td>{{this.stock}}</td>
     </tr>
-  {{/each}}
+    {{/each}}
   </tbody>
 </table>
 

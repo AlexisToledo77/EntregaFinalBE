@@ -21,11 +21,10 @@ document.getElementById('createBtn').addEventListener('click', () => {
   })
     .then(result => result.json())
     .then(result => {
-      
+
       if (result.status === 'error') throw new Error(result.error)
     })
     .then(() => fetch('/api/products'))
-    // .then(result => result.json()) ver que pasa con esto
     .then(result => {
       if (result.status === 'error') throw new Error(result.error)
       else socket.emit('productList', result)
@@ -43,52 +42,23 @@ document.getElementById('createBtn').addEventListener('click', () => {
     })
 })
 
-
-
-
-
 function deleteProduct(id) {
   fetch(`/api/products/${id}`, {
     method: 'DELETE',
   })
-  .then(response => response.json())
-  .then(result => {
-    if (result.status === 'error') throw new Error(result.message);
-    console.log('Producto eliminado:', result);
-    return fetch('/api/products');
-  })
-  .then(result => {
-    if (result.status === 'error') throw new Error(result.message);
-    socket.emit('productList', result);
-    window.location.reload();
-  })
-  .catch(err => {
-    console.error('Error:', err);
-    alert(`Ocurrió un error: ${err.message}`);
-  });
+    .then(response => response.json())
+    .then(result => {
+      if (result.status === 'error') throw new Error(result.message)
+      console.log('Producto eliminado:', result)
+      return fetch('/api/products')
+    })
+    .then(result => {
+      if (result.status === 'error') throw new Error(result.message)
+      socket.emit('productList', result)
+      window.location.reload()
+    })
+    .catch(err => {
+      console.error('Error:', err)
+      alert(`Ocurrió un error: ${err.message}`)
+    })
 }
-
-
-// socket.on('updateProducts', data => {
-//   table.innerHTML =
-//     `<tr>
-//       <td></td>
-//       <td><strong>Producto</strong></td>
-//       <td><strong>Descripción</strong></td>
-//       <td><strong>Precio</strong></td>
-//       <td><strong>Código</strong></td>
-//       <td><strong>Stock</strong></td>
-//     </tr>`;
-//   for (product of data) {
-//     let tr = document.createElement('tr')
-//     tr.innerHTML =
-//       ` 
-//         <td><button class="btn btn-danger" onclick="deleteProduct("${product.id}")">Eliminar</button></td>
-//         <td>${product.title}</td>
-//         <td>${product.description}</td>
-//         <td>${product.price}</td>
-//         <td>${product.code}</td>
-//         <td>${product.stock}</td>
-//       `
-//     table.getElementsByTagName('tbody')[0].appendChild(tr);
-//   }

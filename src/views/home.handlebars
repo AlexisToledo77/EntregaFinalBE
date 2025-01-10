@@ -1,11 +1,38 @@
+<h1>Home Page</h1>
+<hr>
+{{>menu}}
+
 <h1>Lista de Productos</h1>
 <ul>
     {{#each products}}
     <li>{{this.title}} - ${{this.price}}</li>
     {{/each}}
-   <br></br>
-   <button onclick="window.location.href='/products'">Ver Productos </button>
+    <br></br>
+    <button onclick="window.location.href='/products'">Ver Productos </button>
     <button onclick="window.location.href='/realTimeProducts'">Editar Productos en DB</button>
     <button onclick="window.location.href='/verUsuarios'">Ver Usuarios</button>
-    <button onclick="window.location.href='/carts/675cba1c2b327a05ddfef4ea'">Ver Carrito</button>
+    <button onclick="viewCart()">Ver Carrito</button>
+    <script>
+        function getCurrentUser() {
+            return fetch('/api/sessions/current', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => data.datosUsuario)
+                .catch((error) => {
+                    console.error('Error al obtener los datos del usuario:', error)
+                })
+        }
+
+        function viewCart() {
+            getCurrentUser().then(usuario => {
+                const cartId = usuario.cart
+                console.log("Cart ID:", cartId)
+                window.location.href = `/carts/${cartId}`
+            })
+        }
+    </script>
 </ul>

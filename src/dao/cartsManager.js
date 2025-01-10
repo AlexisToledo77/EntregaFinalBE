@@ -46,29 +46,40 @@ export class CartManager {
     }
 
     static async clearCart(cid) {
-        return await cartsModel.findByIdAndDelete(cid).lean()
+        try {
+            const cart = await cartsModel.findByIdAndUpdate(
+                cid,
+                { $set: { products: [] } },
+                { new: true }
+            );
+            if (!cart) {
+                throw new Error('Carrito no encontrado')
+            }
+            return cart
+        } catch (error) {
+            console.error('Error al vaciar el carrito:', error)
+            throw error
+        }
     }
 
     static async removeProductFromCart(cid, pid) {
         try {
-          const updatedCart = await cartsModel.findByIdAndUpdate(
-            cid, 
-            { $pull: { products: { product: pid } } }, 
-            { new: true } 
-          ).lean();
-      
-          if (!updatedCart) {
-            throw new Error('Carrito no encontrado o producto no existe en el carrito');
-          }
-      
-          return updatedCart;
-        } catch (error) {
-          console.error('Error eliminando el producto del carrito:', error);
-          throw error;
-        }
-      }
-      
+            const updatedCart = await cartsModel.findByIdAndUpdate(
+                cid,
+                { $pull: { products: { product: pid } } },
+                { new: true }
+            ).lean();
 
+            if (!updatedCart) {
+                throw new Error('Carrito no encontrado o producto no existe en el carrito')
+            }
+
+            return updatedCart
+        } catch (error) {
+            console.error('Error eliminando el producto del carrito:', error)
+            throw error;
+        }
+    }
 
     static async paginate(filter, options) {
         try {
@@ -78,26 +89,5 @@ export class CartManager {
             throw new Error('Error al paginar productos')
         }
     }
-
-    // static async addProductInCart({ _id: cartId }) {
-    //     let cart = await this.getCartById(cartId)
-    //     if (!cart) {
-
-    //         let newCart = await this.addCart({ products: [{ product: obj.product, quantity: obj.quantity }] })
-    //         return newCart;
-    //     }
-
-    //     let productIndex = cart.products.findIndex(item => item.product.toString() === obj.product)
-
-    //     if (productIndex !== -1) {
-    //         cart.products[productIndex].quantity += obj.quantity
-    //     } else {
-    //         cart.products.push({ product: obj.product, quantity: obj.quantity })
-    //     }
-
-    //     let result = await cartsModel.updateOne({ _id: cid }, { products: cart.products })
-    //     return result
-    // }
-
 }
 

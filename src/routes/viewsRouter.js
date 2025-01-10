@@ -2,6 +2,8 @@ import express from 'express'
 import { ProductsManager } from '../dao/productsManager.js'
 import { UserManager } from '../dao/userManager.js'
 import { CartManager } from '../dao/cartsManager.js'
+import { auth } from '../middleware/auth.js'
+import passport from 'passport'
 
 const router = express.Router()
 
@@ -10,7 +12,30 @@ router.get('/', async (req, res) => {
   res.render('home', { products })
 })
 
-router.get("/realtimeproducts", async(req, res) => {
+router.get('/register', (req, res) => {
+  let { mensaje } = req.query
+  res.status(200).render('register',
+    { mensaje })
+})
+
+router.get('/login', (req, res) => {
+  let { mensaje } = req.query
+  res.status(200).render('login',
+    { mensaje })
+})
+
+router.get("/perfil", auth,
+  passport.authenticate("current", { session: false }),
+  (req, res) => {
+    console.log(req.user)
+    res.status(200).render('perfil',
+      {
+        mensaje: "perfil usuario",
+        datosUsuario: req.user
+      })
+  })
+
+router.get("/realtimeproducts", async (req, res) => {
   let allProducts = await ProductsManager.getProducts()
   res.render("realTimeProducts", {
     title: "Productos RealTime",
@@ -29,33 +54,33 @@ router.get('/carts', async (req, res) => {
 })
 
 router.get('/carts/:cid', async (req, res) => {
-try {
-  let cid = req.params.cid;
-  let cart = await CartManager.getCartById(cid)
-  if (cart) {
+  try {
+    let cid = req.params.cid;
+    let cart = await CartManager.getCartById(cid)
+    if (cart) {
       res.render("cart", { cart })
-  } else {
+    } else {
       res.status(404).json({ status: "error", error: "Producto no encontrado" })
+    }
+  } catch (error) {
+    res.status(500).json({ status: "error", error: error.message })
   }
-} catch (error) {
-  res.status(500).json({ status: "error", error: error.message })
-}
 })
 
 router.get('/products', async (req, res) => {
   try {
     let { limit = 10, page = 1, sort, query } = req.query
-    limit = parseInt(limit);
-    page = parseInt(page);
-    
+    limit = parseInt(limit)
+    page = parseInt(page)
+
     let options = {
       limit,
       page,
       lean: true
-    };
+    }
 
     if (sort && (sort === 'asc' || sort === 'desc')) {
-      options.sort = { price: sort === 'asc' ? 1 : -1 };
+      options.sort = { price: sort === 'asc' ? 1 : -1 }
     }
 
     const filter = {};
@@ -63,21 +88,21 @@ router.get('/products', async (req, res) => {
       filter.$or = [
         { category: { $regex: query, $options: 'i' } },
         { status: query.toLowerCase() === 'true' }
-      ];
+      ]
     }
 
-    console.log('Filter:', filter);
-    console.log('Options:', options);
+    console.log('Filter:', filter)
+    console.log('Options:', options)
 
-    let result = await ProductsManager.paginate(filter, options);
+    let result = await ProductsManager.paginate(filter, options)
 
-    console.log('Productos obtenidos:', result.docs);
-    console.log('Total de documentos:', result.totalDocs);
-    console.log('Límite:', result.limit);
-    console.log('Página actual:', result.page);
-    console.log('Total de páginas:', result.totalPages);
+    console.log('Productos obtenidos:', result.docs)
+    console.log('Total de documentos:', result.totalDocs)
+    console.log('Límite:', result.limit)
+    console.log('Página actual:', result.page)
+    console.log('Total de páginas:', result.totalPages)
 
-    let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/products`;
+    let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}/products`
 
     res.render('products', {
       products: result.docs,
@@ -89,27 +114,27 @@ router.get('/products', async (req, res) => {
       nextPage: result.hasNextPage ? result.nextPage : null,
       prevLink: result.hasPrevPage ? `${baseUrl}?limit=${limit}&page=${result.prevPage}${sort ? `&sort=${sort}` : ''}${query ? `&query=${query}` : ''}` : null,
       nextLink: result.hasNextPage ? `${baseUrl}?limit=${limit}&page=${result.nextPage}${sort ? `&sort=${sort}` : ''}${query ? `&query=${query}` : ''}` : null
-    });
+    })
   } catch (error) {
-    console.error('Error al obtener productos:', error);
+    console.error('Error al obtener productos:', error)
     res.status(500).render('error', {
       error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
       detalle: error.message
-    });
+    })
   }
-});
+})
 
 router.get("/products/:pid", async (req, res) => {
   try {
-      let pid = req.params.pid
-      let product = await ProductsManager.getProductsById(pid)
-      if (product) {
-          res.render("productDetail", { product })
-      } else {
-          res.status(404).json({ status: "error", error: "Producto no encontrado" })
-      }
+    let pid = req.params.pid
+    let product = await ProductsManager.getProductsById(pid)
+    if (product) {
+      res.render("productDetail", { product })
+    } else {
+      res.status(404).json({ status: "error", error: "Producto no encontrado" })
+    }
   } catch (error) {
-      res.status(500).json({ status: "error", error: error.message })
+    res.status(500).json({ status: "error", error: error.message })
   }
 })
 

@@ -1,95 +1,133 @@
 <h1>Productos</h1>
 {{#if products.length}}
-  <div class="product-grid">
-    {{#each products}}
-      <div class="product-card">
-        <h2>{{this.title}}</h2>
-        <p>Precio: ${{this.price}}</p>
-        <a href="/products/{{this._id}}">Ver detalles</a>
-        <button onclick="addToCart('{{this._id}}')">Agregar al carrito</button>
-      </div>
-    {{/each}}
+<div class="product-grid">
+  {{#each products}}
+  <div class="product-card">
+    <h2>{{this.title}}</h2>
+    <p>Precio: ${{this.price}}</p>
+    <a href="/products/{{this._id}}">Ver detalles</a>
+    <button onclick="addToCart('{{this._id}}')">Agregar al carrito</button>
   </div>
+  {{/each}}
+</div>
 {{else}}
-  <p>No hay productos para mostrar en esta página.</p>
+<p>No hay productos para mostrar en esta página.</p>
 {{/if}}
 
 <div class="pagination">
   {{#if hasPrevPage}}
-    <a href="{{prevLink}}" class="pagination-button">Anterior</a>
+  <a href="{{prevLink}}" class="pagination-button">Anterior</a>
   {{else}}
-    <span class="pagination-button disabled">Anterior</span>
+  <span class="pagination-button disabled">Anterior</span>
   {{/if}}
-  
+
   <span>Página {{page}} de {{totalPages}}</span>
-  
+
   {{#if hasNextPage}}
-    <a href="{{nextLink}}" class="pagination-button">Siguiente</a>
+  <a href="{{nextLink}}" class="pagination-button">Siguiente</a>
   {{else}}
-    <span class="pagination-button disabled">Siguiente</span>
+  <span class="pagination-button disabled">Siguiente</span>
   {{/if}}
 </div>
 
 <script>
-  console.log('Productos renderizados:', {{products.length}});
-  console.log('Página actual:', {{page}});
-  console.log('Total de páginas:', {{totalPages}});
+  console.log('Productos renderizados:', {{ products.length }})
+  console.log('Página actual:', {{ page }})
+  console.log('Total de páginas:', {{ totalPages }})
 </script>
 
 <script>
-function addToCart(productId) {
-        fetch(`/api/carts/675cba1c2b327a05ddfef4ea/product/${productId}`, {
+
+  function getCurrentUser() {
+    return fetch('/api/sessions/current', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+      .then(response => response.json())
+      .then(data => data.datosUsuario)
+    console.log(datosUsuario)
+      .catch((error) => {
+        console.error('Error al obtener los datos del usuario:', error)
+      });
+  }
+
+  function addToCart(productId) {
+    getCurrentUser().then(datosUsuario => {
+      const cartId = datosUsuario.cart
+      console.log("Cart ID:", cartId)
+      fetch(`/api/carts/${cartId}/product/${productId}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ quantity: 1 }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          alert('Producto agregado al carrito')
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
     })
-    .then(response => response.json())
-    .then(data => {
+  }
+
+
+  function addToCart1(productId) {
+    fetch(`/api/carts/675cba1c2b327a05ddfef4ea/product/${productId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ quantity: 1 }),
+    })
+      .then(response => response.json())
+      .then(data => {
         alert('Producto agregado al carrito')
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
         console.error('Error:', error)
-    });
-}
+      });
+  }
 </script>
 
 <button onclick="window.location.href='/'">Volver a Home</button>
 
 <style>
-.product-grid {
+  .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
     padding: 20px;
-}
+  }
 
-.product-card {
+  .product-card {
     border: 1px solid #ddd;
     padding: 15px;
     border-radius: 8px;
     text-align: center;
-}
+  }
 
-.pagination {
+  .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-}
+  }
 
-.pagination-button {
+  .pagination-button {
     padding: 10px 15px;
     margin: 0 5px;
     background-color: #007bff;
     color: white;
     text-decoration: none;
     border-radius: 5px;
-}
+  }
 
-.pagination-button.disabled {
+  .pagination-button.disabled {
     background-color: #ccc;
     cursor: not-allowed;
-}
+  }
 </style>
