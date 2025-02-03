@@ -1,6 +1,7 @@
 import { ProductModel } from "../models/productModel.js"
+import mongoose from "mongoose"
 
-export class ProductsManager {
+export class ProductsDAO {
 
   static async getProducts() {
     return await ProductModel.find().lean()
@@ -25,6 +26,10 @@ export class ProductsManager {
     return await ProductModel.findByIdAndUpdate(id, aModificar, { new: true }).lean()
   }
 
+  static async updateProduct(id, aModificar) {
+    return await ProductModel.findByIdAndUpdate(id, aModificar, { new: true })
+  }
+
   static async deleteProducts(id) {
     return await ProductModel.findByIdAndDelete(id).lean()
   }
@@ -42,4 +47,4 @@ export class ProductsManager {
     }
   }
 }
-export const productsManager = new ProductsManager
+export const productsDAO = new ProductsDAO

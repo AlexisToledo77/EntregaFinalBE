@@ -1,6 +1,7 @@
 import { cartsModel } from "../models/cartModel.js"
+import mongoose from "mongoose"
 
-export class CartManager {
+export class CartsDAO {
     static async getById(id) {
         return await cartsModel.findOne({ _id: id })
     }
@@ -24,6 +25,14 @@ export class CartManager {
         return await cartsModel.create({ product: [] })
     }
 
+    static async deleteCart(id) {
+        return await cartsModel.findByIdAndDelete(id).lean()
+      }
+
+    static async getCartBy(filtro={}){
+        return await cartsModel.findOne(filtro).lean()
+    }
+
     static async getCartById(cid) {
         try {
             let cart = await cartsModel.findById(cid).populate('products.product')
@@ -45,21 +54,26 @@ export class CartManager {
         ).lean()
     }
 
-    static async clearCart(cid) {
-        try {
-            const cart = await cartsModel.findByIdAndUpdate(
-                cid,
-                { $set: { products: [] } },
-                { new: true }
-            );
-            if (!cart) {
-                throw new Error('Carrito no encontrado')
-            }
-            return cart
-        } catch (error) {
-            console.error('Error al vaciar el carrito:', error)
-            throw error
-        }
+    // static async clearCart(cid) {
+    //     try {
+    //         const cart = await cartsModel.findByIdAndUpdate(
+    //             cid,
+    //             { $set: { products: [] } },
+    //             { new: true }
+    //         );
+    //         if (!cart) {
+    //             throw new Error('Carrito no encontrado')
+    //         }
+    //         return cart
+    //     } catch (error) {
+    //         console.error('Error al vaciar el carrito:', error)
+    //         throw error
+    //     }
+    // }
+
+    static async clearCart(cartId) {
+        // Lógica para vaciar el carrito, por ejemplo, eliminando todos los productos del carrito
+        return await Cart.updateOne({ _id: cartId }, { $set: { products: [] } });
     }
 
     static async removeProductFromCart(cid, pid) {

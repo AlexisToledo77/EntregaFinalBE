@@ -12,8 +12,10 @@ import exphbs from 'express-handlebars'
 import { registerHelpers } from './hbs-helpers.js'
 import { router as sessionsRouter } from "./routes/sessionsRouter.js"
 import { inciarPassport } from './config/passport.config.js'
+
 import passport from 'passport'
 import cookieParser from "cookie-parser"
+
 
 const PORT = config.PORT
 

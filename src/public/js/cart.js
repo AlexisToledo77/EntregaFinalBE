@@ -56,8 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error(error))
     }
 
+    //esta parte es prueba para boton vaciar
     window.clearCart = function (cartId) {
-        fetch(`/api/carts/${cartId}`, {
+        fetch(`/api/carts/${cartId}/product`, {
             method: 'DELETE'
         })
             .then(response => response.json())
@@ -67,6 +68,18 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => console.error(error))
     }
+
+    // window.clearCart = function (cartId) {
+    //     fetch(`/api/carts/${cartId}`, {
+    //         method: 'DELETE'
+    //     })
+    //         .then(response => response.json())
+    //         .then(data => {
+    //             cartList.innerHTML = '<p>El carrito está vacío</p>'
+    //             document.getElementById('cartTotal').textContent = '0'
+    //         })
+    //         .catch(error => console.error(error))
+    // }
 
     function updateSubtotalAndTotal() {
         let total = 0
