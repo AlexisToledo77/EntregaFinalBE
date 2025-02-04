@@ -48,7 +48,7 @@ export const inciarPassport = () => {
                         return done(null, false, { message: 'Todos los campos son requeridos' })
                     }
 
-                    let regExEmail = validEmail;
+                    let regExEmail = validEmail
                     if (!regExEmail.test(email)) {
                         return done(null, false, { message: 'Formato inválido del email' })
                     }
@@ -76,7 +76,7 @@ export const inciarPassport = () => {
                         password,
                         age,
                         cart: newCart._id,
-                    });
+                    })
 
                     await nuevoUsuario.save()
 
@@ -87,40 +87,6 @@ export const inciarPassport = () => {
             }
         ))
 
-    // passport.use(
-    //     "registro",
-    //     new local.Strategy(
-    //         {
-    //             usernameField: "email",
-    //             passReqToCallback: true,
-    //         },
-    //         async (req, username, password, done) => {
-    //             try {
-    //                 let { first_name, last_name, age } = req.body
-    //                 if (!first_name || !last_name || !age) {
-    //                     return done(null, false, { message: "Todos los campos son requeridos" })
-    //                 }
-
-    //                 let existe = await UserDAO.getBy({ email: username })
-    //                 if (existe) {
-    //                     return done(null, false, { message: "El usuario ya existe" })
-    //                 }
-
-    //                 password = generaHash(password)
-
-    //                 return done(null, {
-    //                     first_name,
-    //                     last_name,
-    //                     age,
-    //                     email: username,
-    //                     password,
-    //                 })
-    //             } catch (error) {
-    //                 return done(error)
-    //             }
-    //         }
-    //     )
-    // )
 
     passport.use(
         "login",

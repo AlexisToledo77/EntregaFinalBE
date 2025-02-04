@@ -1,4 +1,4 @@
-const socket = io();
+const socket = io()
 
 const table = document.getElementById('productsTable')
 
@@ -34,10 +34,10 @@ document.getElementById('createBtn').addEventListener('click', () => {
       document.getElementById('price').value = ''
       document.getElementById('stock').value = ''
       document.getElementById('category').value = ''
-      window.location.reload();
+      window.location.reload()
     })
     .catch(err => {
-      console.error('Error:', err);
+      console.error('Error:', err)
       alert(`Ocurrio un error: ${err}`)
     })
 })

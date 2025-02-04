@@ -23,7 +23,7 @@ export const authAdmin = (req, res, next) => {
     if (!req.cookies || !req.cookies.cookietoken) {
         return res.status(403).send('Token no proporcionado.')
     }
-    let token = req.cookies.cookietoken;
+    let token = req.cookies.cookietoken
 
     jwt.verify(token, config.SECRET, (err, decoded) => {
         if (err) {
@@ -43,9 +43,9 @@ export const authUser = (req, res, next) => {
     if (!req.cookies || !req.cookies.cookietoken) {
         console.log('Token no proporcionado.')
         return res.status(403).send('Token no proporcionado.')
-        
+
     }
-    let token = req.cookies.cookietoken;
+    let token = req.cookies.cookietoken
 
     jwt.verify(token, config.SECRET, (err, decoded) => {
         if (err) {
@@ -53,7 +53,7 @@ export const authUser = (req, res, next) => {
             return res.status(500).send('Error al autenticar el token.')
         }
 
-        console.log('Token decodificado:', decoded);
+        console.log('Token decodificado:', decoded)
 
         if (decoded.role !== 'user') {
             console.log('No tienes los permisos necesarios.')

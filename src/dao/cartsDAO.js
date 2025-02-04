@@ -1,11 +1,6 @@
-import { cartsModel } from "../models/cartModel.js"
-import mongoose from "mongoose"
+import { cartsModel } from '../models/cartModel.js'
 
 export class CartsDAO {
-    static async getById(id) {
-        return await cartsModel.findOne({ _id: id })
-    }
-
     static async create() {
         return await cartsModel.create({ products: [] })
     }
@@ -13,23 +8,12 @@ export class CartsDAO {
     static async update(id, cart) {
         return await cartsModel.updateOne({ _id: id }, cart)
     }
-    static async getCart() {
-        return await cartsModel.find().lean()
+
+    static async getCart(filter = {}) {
+        return await cartsModel.find(filter).lean()
     }
 
-    static async createCart() {
-        return await cartsModel.create()
-    }
-
-    static async addCart(cart) {
-        return await cartsModel.create({ product: [] })
-    }
-
-    static async deleteCart(id) {
-        return await cartsModel.findByIdAndDelete(id).lean()
-      }
-
-    static async getCartBy(filtro={}){
+    static async getCartBy(filtro = {}) {
         return await cartsModel.findOne(filtro).lean()
     }
 
@@ -54,26 +38,11 @@ export class CartsDAO {
         ).lean()
     }
 
-    // static async clearCart(cid) {
-    //     try {
-    //         const cart = await cartsModel.findByIdAndUpdate(
-    //             cid,
-    //             { $set: { products: [] } },
-    //             { new: true }
-    //         );
-    //         if (!cart) {
-    //             throw new Error('Carrito no encontrado')
-    //         }
-    //         return cart
-    //     } catch (error) {
-    //         console.error('Error al vaciar el carrito:', error)
-    //         throw error
-    //     }
-    // }
-
     static async clearCart(cartId) {
-        // Lógica para vaciar el carrito, por ejemplo, eliminando todos los productos del carrito
-        return await Cart.updateOne({ _id: cartId }, { $set: { products: [] } });
+        return await cartsModel.updateOne(
+            { _id: cartId },
+            { $set: { products: [] } }
+        )
     }
 
     static async removeProductFromCart(cid, pid) {
@@ -82,7 +51,7 @@ export class CartsDAO {
                 cid,
                 { $pull: { products: { product: pid } } },
                 { new: true }
-            ).lean();
+            ).lean()
 
             if (!updatedCart) {
                 throw new Error('Carrito no encontrado o producto no existe en el carrito')
@@ -91,16 +60,20 @@ export class CartsDAO {
             return updatedCart
         } catch (error) {
             console.error('Error eliminando el producto del carrito:', error)
-            throw error;
+            throw error
         }
     }
 
-    static async paginate(filter, options) {
+    static async deleteCart(id) {
         try {
-            return await cartsModel.paginate(filter, options)
+            const cart = await cartsModel.findByIdAndDelete(id).lean()
+            if (!cart) {
+                throw new Error('Carrito no encontrado')
+            }
+            return cart
         } catch (error) {
-            console.log(error);
-            throw new Error('Error al paginar productos')
+            console.error('Error al eliminar el carrito:', error)
+            throw error
         }
     }
 }

@@ -10,26 +10,26 @@ export class ProductsController {
                 limit: parseInt(limit),
                 page: parseInt(page),
                 lean: true
-            };
-    
+            }
+
             if (sort) {
                 options.sort = { price: sort === 'asc' ? 1 : -1 }
             }
-    
+
             const filter = {}
             if (query) {
                 filter.$or = [
                     { category: { $regex: query, $options: 'i' } },
                     { status: query.toLowerCase() === 'true' }
-                ];
+                ]
             }
-    
+
             let result = await ProductsDAO.paginate(filter, options)
-            
-    
+
+
             let baseUrl = `${req.protocol}://${req.get('host')}${req.baseUrl}`
-    
-    
+
+
             res.render('products', {
                 products: result.docs,
                 page: result.page,
@@ -40,25 +40,25 @@ export class ProductsController {
                 nextPage: result.hasNextPage ? result.nextPage : null,
                 prevLink: result.hasPrevPage ? `${baseUrl}?limit=${limit}&page=${result.prevPage}&sort=${sort}&query=${query}` : null,
                 nextLink: result.hasNextPage ? `${baseUrl}?limit=${limit}&page=${result.nextPage}&sort=${sort}&query=${query}` : null
-            });
+            })
         } catch (error) {
             console.log(error)
             res.status(500).render('error', {
                 error: 'Error inesperado en el servidor - Intente más tarde, o contacte a su administrador',
                 detalle: error.message
-            });
+            })
         }
     }
 
-    static async getProductsById (req, res) {
-    
+    static async getProductsById(req, res) {
+
         let pid = req.params.id
-    
+
         if (!isValidObjectId(pid)) {
             res.setHeader('Content-Type', 'application/json')
             return res.status(400).json({ error: `id formato inválido` })
         }
-    
+
         try {
             let products = await ProductsDAO.getProductsBy({ _id: pid })
             if (!products) {
@@ -66,9 +66,9 @@ export class ProductsController {
                 return res.status(400).json({ error: `No existen usuarios con id ${id}` })
             }
             res.setHeader('Content-Type', 'application/json')
-            return res.status(200).json({ products });
+            return res.status(200).json({ products })
         } catch (error) {
-            console.log(error);
+            console.log(error)
             res.setHeader('Content-Type', 'application/json')
             return res.status(500).json(
                 {
@@ -79,7 +79,7 @@ export class ProductsController {
         }
     }
 
-    static async createProducts (req, res) {
+    static async createProducts(req, res) {
         const newProduct = req.body
         const result = await ProductsDAO.createProducts(newProduct)
         const products = await ProductsDAO.getProducts()
@@ -87,7 +87,7 @@ export class ProductsController {
         res.json(result)
     }
 
-    static async updateProducts (req, res) {
+    static async updateProducts(req, res) {
         let { id } = req.params
         if (!isValidObjectId(id)) {
             res.setHeader('Content-Type', 'application/json')
@@ -96,17 +96,17 @@ export class ProductsController {
         let { ...aModificar } = req.body
         let cantPropsModificar = Object.keys(aModificar).length
         if (cantPropsModificar === 0) {
-            res.setHeader('Content-Type', 'application/json');
+            res.setHeader('Content-Type', 'application/json')
             return res.status(400).json({ error: `No se han ingresado propiedades para modificar` })
         }
-    
+
         try {
             let productModificado = await ProductsDAO.update(id, aModificar)
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(200).json({ productModificado });
+            res.setHeader('Content-Type', 'application/json')
+            return res.status(200).json({ productModificado })
         } catch (error) {
-            console.log(error);
-            res.setHeader('Content-Type', 'application/json');
+            console.log(error)
+            res.setHeader('Content-Type', 'application/json')
             return res.status(500).json(
                 {
                     error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
@@ -116,19 +116,19 @@ export class ProductsController {
         }
     }
 
-    static async deleteProducts (req, res) {
+    static async deleteProducts(req, res) {
         let { id } = req.params
         if (!isValidObjectId(id)) {
             res.setHeader('Content-Type', 'application/json')
             return res.status(400).json({ error: `ID invalido` })
         }
-    
+
         try {
             let productEliminado = await ProductsDAO.deleteProducts(id)
             res.setHeader('Content-Type', 'application/json')
             return res.status(200).json({ productEliminado })
         } catch (error) {
-            console.log(error);
+            console.log(error)
             res.setHeader('Content-Type', 'application/json')
             return res.status(500).json(
                 {

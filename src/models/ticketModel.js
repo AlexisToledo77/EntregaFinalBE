@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-export const ticketModel=mongoose.model(
+export const ticketModel = mongoose.model(
     "tickets",
     new mongoose.Schema(
         {
@@ -11,7 +11,7 @@ export const ticketModel=mongoose.model(
             comprador: String
         },
         {
-            timestamps:true
+            timestamps: true
         }
     )
 )

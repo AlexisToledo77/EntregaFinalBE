@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (!response.ok) {
                     return response.text().then(text => {
                         throw new Error(`HTTP error! status: ${response.status}, message: ${text}`)
-                    });
+                    })
                 }
                 return response.json()
             })
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error('Error:', error)
                 alert('Hubo un error al actualizar la cantidad. Por favor, intenta de nuevo.')
-            });
+            })
     }
 
     window.removeProductFromCart = function (cartId, productId) {
@@ -56,9 +56,8 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error(error))
     }
 
-    //esta parte es prueba para boton vaciar
     window.clearCart = function (cartId) {
-        fetch(`/api/carts/${cartId}/product`, {
+        fetch(`/api/carts/${cartId}/products/`, {
             method: 'DELETE'
         })
             .then(response => response.json())
@@ -69,17 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error(error))
     }
 
-    // window.clearCart = function (cartId) {
-    //     fetch(`/api/carts/${cartId}`, {
-    //         method: 'DELETE'
-    //     })
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             cartList.innerHTML = '<p>El carrito está vacío</p>'
-    //             document.getElementById('cartTotal').textContent = '0'
-    //         })
-    //         .catch(error => console.error(error))
-    // }
+
 
     function updateSubtotalAndTotal() {
         let total = 0

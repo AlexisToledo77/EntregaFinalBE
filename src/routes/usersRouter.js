@@ -1,9 +1,10 @@
 import express from 'express'
 import { UsersController } from '../controller/UsersController.js'
+import { authAdmin } from '../middleware/auth.js'
 
 export const router = express.Router()
 
-router.get('/', UsersController.getUsers)
+router.get('/', authAdmin, UsersController.getUsers)
 
 router.get('/:id', UsersController.getUserById)
 

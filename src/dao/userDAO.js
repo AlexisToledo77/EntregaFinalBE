@@ -10,12 +10,8 @@ export class UserDAO {
     return await UserModel.findOne(filtro).lean()
   }
 
-  // static async getUserById(id) {
-  //   return await UserModel.findOne(id).lean()
-  // }
-
   static async getUserById(id) {
-    return await UserModel.findOne({ _id: new mongoose.Types.ObjectId(id) });
+    return await UserModel.findOne({ _id: new mongoose.Types.ObjectId(id) })
   }
 
   static async getBy(filtro = {}) {

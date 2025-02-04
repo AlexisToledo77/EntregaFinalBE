@@ -54,7 +54,7 @@ app.use(passport.initialize())
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).json({ status: 'error1', message: err.message })
-});
+})
 
 app.use('/', viewsRouter)
 app.use('/api/products', productsRouter)

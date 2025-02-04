@@ -2,19 +2,19 @@ import { TicketDAO } from "../dao/ticketDAO.js"
 
 export class TicketController {
     static async generateTicket(
-        nroComp, 
-        fecha, 
-        detalle, 
-        total, 
+        nroComp,
+        fecha,
+        detalle,
+        total,
         comprador
     ) {
         try {
-            const ticketData = { 
-                nroComp, 
-                fecha, 
-                detalle, 
-                total, 
-                comprador 
+            const ticketData = {
+                nroComp,
+                fecha,
+                detalle,
+                total,
+                comprador
             }
 
             const ticket = await TicketDAO.createTicket(ticketData)

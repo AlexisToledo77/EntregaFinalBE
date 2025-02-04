@@ -12,17 +12,10 @@ router.get(
     SessionsController.authenticate
 )
 router.post(
-    "/register",
-    SessionsController.register
-)
-// router.post(
-//     "/register",
-//     passport.authenticate("registro", { session: false }),
-//     SessionsController.register
-// )
+    "/register", SessionsController.register)
 
-router.post("/login",
-    SessionsController.login)
+
+router.post("/login", SessionsController.login)
 
 
 router.get("/logout", SessionsController.logout)
