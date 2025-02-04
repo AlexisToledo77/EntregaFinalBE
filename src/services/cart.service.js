@@ -88,8 +88,6 @@ export class CartsService {
         return await CartsDAO.update(cid, cartUpdate)
     }
 
-
-
     static async createCart() {
         try {
             const cart = await CartsDAO.create()
